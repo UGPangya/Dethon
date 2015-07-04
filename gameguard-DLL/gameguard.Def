@@ -1,0 +1,3 @@
+LIBRARY uncompress.dll
+EXPORTS
+	gameguard_init

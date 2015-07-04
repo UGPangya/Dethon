@@ -1,0 +1,128 @@
+[Project]
+Assembler=masm
+Type=Dll Project
+Description=uncompress
+Backup=$P\Bak\
+Group=1
+GroupExpand=1
+[Files]
+1=uncompress.Asm
+2=uncompress.Inc
+3=uncompress.Def
+4=uncompress.rc
+5=Res\ToolBox.bmp
+[MakeFiles]
+0=uncompress.rap
+1=uncompress.rc
+2=uncompress.asm
+3=uncompress.obj
+4=uncompress.res
+5=uncompress.exe
+6=uncompress.def
+7=uncompress.dll
+8=uncompress.txt
+9=uncompress.lib
+10=uncompress.mak
+11=uncompress.hla
+12=uncompress.com
+[MakeDef]
+Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
+1=4,O,$B\RC.EXE /v,1
+2=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
+3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3,4
+4=0,0,,5
+5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
+7=0,0,"$E\OllyDbg",5
+6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
+11=4,O,$B\RC.EXE /v,1
+12=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
+13=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
+14=0,0,,5
+15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
+16=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
+17=0,0,"$E\OllyDbg",5
+[Resource]
+1=IDB_BMP,100,0,Res\ToolBox.bmp
+[StringTable]
+[VerInf]
+[Group]
+Group=Added files,Assembly,Resources,Misc,Modules
+1=2
+2=2
+3=4
+4=3
+5=4
+[Find]
+1="55"
+2="90"
+3="08bh"
+4="8b 4d"
+5="8B"
+6="F3"
+7="A1"
+8="C3"
+[VersionControl]
+Settings=1246
+Milestones=129
+MilestoneEvery=10
+MilestoneEveryCurrent=0
+MilestoneOnBuild=0.0.0.0
+MilestoneOnTime=2
+MilestoneOnDate=0
+MilestoneOnDateWhen=1
+MilestoneOnDateStatus=0
+MilestoneOnDateDate=14
+MilestoneOnDateTimeYear=2013
+MilestoneOnDateTimeMonth=11
+MilestoneOnDateTimeDate=9
+MilestoneOnDateTimeHour=19
+MilestoneOnDateTimeMin=16
+MilestoneOnDateTimeSec=17
+MilestoneOnDateTimeStatus=0
+BackupLocation=C:\Documents and Settings\Lucas\Meus documentos\RadASM\Masm\Projects\VCBackups\
+CompressionLevel=0
+DefaultComment=Project $N, $Z, Backup Created On $D At $T.
+ExcludeExt1=\
+ExcludeExt2=\
+ExcludeExt3=\
+ExcludeExt4=\
+FileVerLength=4
+FileVer2Range=0
+FileVer3Range=0
+FileVer4Range=0
+ProductVerLength=4
+ProductVer2Range=0
+ProductVer3Range=0
+ProductVer4Range=0
+[Colref]
+0=00FFFFFF
+1=00FFFFFF
+2=00FFFFFF
+3=00FFFFFF
+4=00FFFFFF
+5=00FFFFFF
+6=00FFFFFF
+7=00FFFFFF
+[Collapse]
+2=
+1=
+3=
+4=
+[Size]
+2=0,0,0,0,371
+1=0,0,0,0,5264
+3=0,0,0,0,49
+4=0,0,0,0,0
+[BookMark]
+0=
+1=
+2=
+3=
+4=
+5=
+6=
+7=
+8=
+9=
+[BreakPoint]
+0=

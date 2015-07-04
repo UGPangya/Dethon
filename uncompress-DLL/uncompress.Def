@@ -1,0 +1,4 @@
+LIBRARY uncompress.dll
+EXPORTS
+	call_uncompress
+	call_encrypt
