@@ -1,5 +1,9 @@
 #include "login_server.h"
 
+#include <stdio.h>
+#include "connect.h"
+#include "encrypt.h"
+
 // **********************************************************
 // **********************************************************
 // ********************* Packet Ref *************************
@@ -10,11 +14,11 @@
 // C??¼??MagestedMag ?61BF605EA3AF2C343DD5309CDFEFF601
 //                      size                    MagestedMag                        Password MD5
 // ad 43 00 00 bc 01 00 [0b] 00 [4d 61 67 65 73 74 65 64 4d 61 67 20] 00 [3631424636303545413341463243333433444435333039434446454646363031]
-unsigned char packet_login_full[42+32];
+unsigned char packet_login_full[42 + 32];
 unsigned char packet_login_part1[] = "\xad\x43\x00\x00\xbc\x01\x00\x0b\x00";
 unsigned char packet_login_part2[] = "\x20\x00\x36\x31\x42\x46\x36\x30\x35\x45\x41\x33\x41\x46\x32\x43\x33\x34\x33\x44"
-"\x44\x35\x33\x30\x39\x43\x44\x46\x45\x46\x46\x36\x30\x31\x00\x00\x00\x00\x00\x00\x00\x00";
-                                                               
+	"\x44\x35\x33\x30\x39\x43\x44\x46\x45\x46\x46\x36\x30\x31\x00\x00\x00\x00\x00\x00\x00\x00";
+
 // Packet para selecionar o servidor Titan Boo ou Delfini.
 //                                                                      byte 7 byte offset
 //unsigned char server_change[] = "\x47\x07\x00\x00\xFA\x03\x00\x81\x00\x00\x00";
@@ -37,7 +41,7 @@ c4 81 11 00 00 00 00 00 96 66 [06] 00 Part 2
 
 // Packet para logar no servidor
 // ð;??ø?ø??MagestedMagÄ?????–f?fc5411?720.002§­*?????158f280
-unsigned char server_login_packet_full[8+32+11+6+2+6+6+7];
+unsigned char server_login_packet_full[8 + 32 + 11 + 6 + 2 + 6 + 6 + 7];
 //                                                        4 Byte = 0x00  size
 unsigned char server_login_packet_part1[] = "\x7D\x3B\x00\x05\x57\x02\x00\x0B\x00";
 //                                                                                    size
@@ -65,164 +69,185 @@ char PacketRecv[1024];
 char PacketSend[1024];
 unsigned char packet_decrypt[1024];*/
 
-void MakePacketLoginServer(struct GeralConfig *GC, struct GlobalVariables *GV)
+void MakePacketLoginServer(struct GeralConfig* GC, struct GlobalVariables* GV)
 {
- if(GC->AutoLogin == 0)
- {
-  ColorText("Login: ", 4);
-  scanf_s("%s", GC->Login, _countof(GC->Login));
-  ColorText("Senha: ", 4);
-  scanf_s("%s", GC->Password, _countof(GC->Password));
-  BarSpace();
- }
-      
- MD5((unsigned char*)GC->Password, strlen(GC->Password), GC->PASSMD5);
- MD5Convert(GC->PASSMD5, GC->PASSMD5CHAR, sizeof(GC->PASSMD5));
-      
- sprintf_s(GV->CInfo, _countof(GV->CInfo), "PASSWORD MD5 [%s]\n", GC->PASSMD5CHAR);
- InfoServer(GV->CInfo);
-      
- // MONTAR O PACKET DO LOGIN ...
- packet_login_part1[7] = strlen(GC->Login);
- CopyStringPos(packet_login_part2, GC->PASSMD5CHAR, sizeof(GC->PASSMD5CHAR), 2, 0);
-     
- CopyStringPos(packet_login_full, packet_login_part1, sizeof(packet_login_part1), 0, 0);
- CopyStringPos(packet_login_full, (unsigned char*)GC->Login, strlen(GC->Login), sizeof(packet_login_part1)-1, 0);
- CopyStringPos(packet_login_full, packet_login_part2, sizeof(packet_login_part2), strlen(GC->Login)+sizeof(packet_login_part1)-1, 0);
-      
- packet_login_full[1] = (strlen(GC->Login)+sizeof(packet_login_part1)+sizeof(packet_login_part2)-2)+0x0A;
- 
- //printf("************ Debug ************\n");
- //ShowPacketInHex(packet_login_full, strlen(GC.Login)+sizeof(packet_login_part1)+sizeof(packet_login_part2)-2);
-      
- sprintf_s(GV->CInfo, _countof(GV->CInfo), "connect server [%s]:[%d]\n", GC->Ip, GC->Port);
- InfoServer(GV->CInfo);
+	if (GC->AutoLogin == 0)
+	{
+		ColorText("Login: ", 4);
+		scanf_s("%s", GC->Login, _countof(GC->Login));
+		ColorText("Senha: ", 4);
+		scanf_s("%s", GC->Password, _countof(GC->Password));
+		BarSpace();
+	}
+
+	MD5((unsigned char*)GC->Password, strlen(GC->Password), GC->PASSMD5);
+	MD5Convert(GC->PASSMD5, GC->PASSMD5CHAR, sizeof(GC->PASSMD5));
+
+	sprintf_s(GV->CInfo, _countof(GV->CInfo), "PASSWORD MD5 [%s]\n", GC->PASSMD5CHAR);
+	InfoServer(GV->CInfo);
+
+	// MONTAR O PACKET DO LOGIN ...
+	packet_login_part1[7] = (unsigned char)strlen(GC->Login);
+	CopyStringPos(packet_login_part2, GC->PASSMD5CHAR, sizeof(GC->PASSMD5CHAR), 2, 0);
+
+	CopyStringPos(packet_login_full, packet_login_part1, sizeof(packet_login_part1), 0, 0);
+	CopyStringPos(packet_login_full, (unsigned char*)GC->Login, (int)strlen(GC->Login), sizeof(packet_login_part1) - 1, 0);
+	CopyStringPos(packet_login_full, packet_login_part2, sizeof(packet_login_part2),
+	              (int)strlen(GC->Login) + sizeof(packet_login_part1) - 1, 0);
+
+	packet_login_full[1] = (unsigned char)(strlen(GC->Login) + sizeof(packet_login_part1) + sizeof(packet_login_part2) - 2) + 0x0A;
+
+	//printf("************ Debug ************\n");
+	//ShowPacketInHex(packet_login_full, strlen(GC.Login)+sizeof(packet_login_part1)+sizeof(packet_login_part2)-2);
+
+	sprintf_s(GV->CInfo, _countof(GV->CInfo), "connect server [%s]:[%d]\n", GC->Ip, GC->Port);
+	InfoServer(GV->CInfo);
 }
 
-void SendMakePacketLogin(struct GeralConfig *GC, struct GlobalVariables *GV)
+void SendMakePacketLogin(struct GeralConfig* GC, struct GlobalVariables* GV)
 {
- // SEND PACKET
- EncryptSendPacket((char*)packet_login_full, strlen(GC->Login)+sizeof(packet_login_part1)+sizeof(packet_login_part2)-2, 4);
- Sleep(100);
+	// SEND PACKET
+	EncryptSendPacket((char*)packet_login_full,
+	                  strlen(GC->Login) + sizeof(packet_login_part1) + sizeof(packet_login_part2) - 2, 4);
+	Sleep(100);
 }
 
-void SendPacketChangeLogin(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV)
+void SendPacketChangeLogin(struct GeralConfig* GC, struct ServerConfig* SC, struct GlobalVariables* GV)
 {
- if(!GC->AutoLogin)
- {
-  for(int i = 0; i < MAX_SERVER_CONFIG-1; i++)
-  {
-   if(strcmp(SC->SERVERNAME[i], "NO_SERVER"))
-   {
-    ColorText("SERVER ", 2);
-    printf("[%02d] %s [%s]:[%d] OFFSET [0x%02X]\n", i, SC->SERVERNAME[i], SC->SERVERIP[i], SC->SERVERPORT[i], SC->OFFSETSERVER[i]);
-   }
-  }
-         
-  for(;;)
-  {
-   ColorText("SERVER -> ", 4);
-   scanf_s("%d", &SC->server_game_change);
-   if(SC->server_game_change < MAX_SERVER_CONFIG)
-    break;
-   else
-    FailedServer("servidor inexistente\n");
-  }
- }
- else
- {
-  if(SC->SELECT_SERVER < MAX_SERVER_CONFIG)
-  {
-   SC->server_game_change = SC->SELECT_SERVER;
-   sprintf_s(GV->CInfo, _countof(GV->CInfo), "AUTO SELECT SERVER ID [%d] SERVER_NAME [%s]\n", SC->SELECT_SERVER, SC->SERVERNAME[SC->server_game_change]);
-   InfoServer(GV->CInfo);
-  }
-  else
-  {
-   FailedServer("servidor inexistente - set 0\n");
-   SC->server_game_change = 0;
-  }
- }
-          
- server_game_change[7] = SC->OFFSETSERVER[SC->server_game_change];
-          
- // Seleciona Servidor primário.
- EncryptSendPacket((char*)server_game_change, sizeof(server_game_change)-1, 0);
-          
- /*
- PacketSoma(server_change, sizeof(server_change)-1, 0);
- SendPacket((char*)server_change, sizeof(server_change)-1);
- */
+	if (!GC->AutoLogin)
+	{
+		for (int i = 0; i < MAX_SERVER_CONFIG - 1; i++)
+		{
+			if (strcmp(SC->SERVERNAME[i], "NO_SERVER"))
+			{
+				ColorText("SERVER ", 2);
+				printf("[%02d] %s [%s]:[%d] OFFSET [0x%02X]\n", i, SC->SERVERNAME[i], SC->SERVERIP[i],
+				       SC->SERVERPORT[i], SC->OFFSETSERVER[i]);
+			}
+		}
+
+		for (;;)
+		{
+			ColorText("SERVER -> ", 4);
+			scanf_s("%d", &SC->server_game_change);
+			if (SC->server_game_change < MAX_SERVER_CONFIG)
+				break;
+			FailedServer("servidor inexistente\n");
+		}
+	}
+	else
+	{
+		if (SC->SELECT_SERVER < MAX_SERVER_CONFIG)
+		{
+			SC->server_game_change = SC->SELECT_SERVER;
+			sprintf_s(GV->CInfo, _countof(GV->CInfo), "AUTO SELECT SERVER ID [%d] SERVER_NAME [%s]\n",
+			          SC->SELECT_SERVER, SC->SERVERNAME[SC->server_game_change]);
+			InfoServer(GV->CInfo);
+		}
+		else
+		{
+			FailedServer("servidor inexistente - set 0\n");
+			SC->server_game_change = 0;
+		}
+	}
+
+	server_game_change[7] = SC->OFFSETSERVER[SC->server_game_change];
+
+	// Seleciona Servidor primário.
+	EncryptSendPacket((char*)server_game_change, sizeof(server_game_change) - 1, 0);
+
+	/*
+	PacketSoma(server_change, sizeof(server_change)-1, 0);
+	SendPacket((char*)server_change, sizeof(server_change)-1);
+	*/
 }
 
-BOOLEAN SendServerLogin(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV)
+BOOLEAN SendServerLogin(struct GeralConfig* GC, struct ServerConfig* SC, struct GlobalVariables* GV)
 {
- int tmp_byte = 0;
- 
- PacketSoma(server_login_packet_part1, sizeof(server_login_packet_part1)-1, 1);
- 
- server_login_packet_part1[7] = strlen(GC->Login);
- server_login_packet_part2[10] = sizeof(SC->OffsetPrimary)-1;
- server_login_packet_part3[0] = sizeof(SC->VERSION_PANGYA)-1;
- server_login_packet_part4[8] = sizeof(SC->OffsetSecondary)-1;
- 
- server_login_packet_part4[0] = SC->VERSION_OFFSET[0];
- server_login_packet_part4[1] = SC->VERSION_OFFSET[1];
- server_login_packet_part4[2] = SC->VERSION_OFFSET[2];
- server_login_packet_part4[3] = SC->VERSION_OFFSET[3];
- 
- server_login_packet_part2[0] = SC->OFFSET_CHAR[0];
- server_login_packet_part2[1] = SC->OFFSET_CHAR[1];
- server_login_packet_part2[2] = SC->OFFSET_CHAR[2];
- server_login_packet_part2[3] = SC->OFFSET_CHAR[3];
- 
- // SizePacket
- server_login_packet_part1[1] = (strlen(GC->Login)+sizeof(SC->OffsetPrimary)+sizeof(server_login_packet_part1)+sizeof(server_login_packet_part2)+sizeof(server_login_packet_part3)+sizeof(server_login_packet_part4)+sizeof(SC->OffsetSecondary)+sizeof(SC->VERSION_PANGYA)-6)-0x05;
+	int tmp_byte = 0;
 
- // PART1
- CopyStringPos(server_login_packet_full, server_login_packet_part1, sizeof(server_login_packet_part1), 0, 0);
- CopyStringPos(server_login_packet_full, (unsigned char*)GC->Login, strlen(GC->Login), sizeof(server_login_packet_part1)-1, 0);
- 
- // PART2
- CopyStringPos(server_login_packet_full, server_login_packet_part2, sizeof(server_login_packet_part2), strlen(GC->Login)+sizeof(server_login_packet_part1)-1, 0);
- CopyStringPos(server_login_packet_full, (unsigned char*)SC->OffsetPrimary, sizeof(SC->OffsetPrimary), strlen(GC->Login)+sizeof(server_login_packet_part1)+sizeof(server_login_packet_part2)-2, 0);
- 
- // PART3
- CopyStringPos(server_login_packet_full, server_login_packet_part3, sizeof(server_login_packet_part3), strlen(GC->Login)+sizeof(SC->OffsetPrimary)+sizeof(server_login_packet_part1)+sizeof(server_login_packet_part2)-3, 0);
- CopyStringPos(server_login_packet_full, (unsigned char*)SC->VERSION_PANGYA, sizeof(SC->VERSION_PANGYA), strlen(GC->Login)+sizeof(SC->OffsetPrimary)+sizeof(server_login_packet_part1)+sizeof(server_login_packet_part2)+sizeof(server_login_packet_part3)-4, 0);
- 
- // PART4
- CopyStringPos(server_login_packet_full, server_login_packet_part4, sizeof(server_login_packet_part4), strlen(GC->Login)+sizeof(SC->OffsetPrimary)+sizeof(server_login_packet_part1)+sizeof(server_login_packet_part2)+sizeof(server_login_packet_part3)+sizeof(SC->VERSION_PANGYA)-5, 0);
- CopyStringPos(server_login_packet_full, (unsigned char*)SC->OffsetSecondary, sizeof(SC->OffsetSecondary), strlen(GC->Login)+sizeof(SC->OffsetPrimary)+sizeof(server_login_packet_part1)+sizeof(server_login_packet_part2)+sizeof(server_login_packet_part3)+sizeof(server_login_packet_part4)+sizeof(SC->VERSION_PANGYA)-6, 0);
- 
- //printf("************ Debug ************\n");
- //ShowPacketInHex(server_login_packet_full, strlen(GC->Login)+sizeof(SC->OffsetPrimary)+sizeof(server_login_packet_part1)+sizeof(server_login_packet_part2)+sizeof(server_login_packet_part3)+sizeof(server_login_packet_part4)+sizeof(SC->OffsetSecondary)+sizeof(SC->VERSION_PANGYA)-7);
- 
- // SEND PACKET
- //DEBUG_MODE_TYPE(1);
- EncryptSendPacket((char*)server_login_packet_full, strlen(GC->Login)+sizeof(SC->OffsetPrimary)+sizeof(server_login_packet_part1)+sizeof(server_login_packet_part2)+sizeof(server_login_packet_part3)+sizeof(server_login_packet_part4)+sizeof(SC->OffsetSecondary)+sizeof(SC->VERSION_PANGYA)-7, 0);
- //DEBUG_MODE_TYPE(0);
- Sleep(100);
- 
- // RECV PACKET
- GV->bytes_recv = DecryptRecvPacket(GV->packet_decrypt, (unsigned char*)GV->PacketRecv, sizeof(GV->PacketRecv)-1);
-  
- /*if(tmp_byte < 35)
- {
-  InfoServer("Packet Error!\n");
-  return 0;
- }*/
- 
- return 1;
+	PacketSoma(server_login_packet_part1, sizeof(server_login_packet_part1) - 1, 1);
+
+	server_login_packet_part1[7] = (unsigned char)strlen(GC->Login);
+	server_login_packet_part2[10] = (unsigned char)sizeof(SC->OffsetPrimary) - 1;
+	server_login_packet_part3[0] = (unsigned char)sizeof(SC->VERSION_PANGYA) - 1;
+	server_login_packet_part4[8] = (unsigned char)sizeof(SC->OffsetSecondary) - 1;
+
+	server_login_packet_part4[0] = SC->VERSION_OFFSET[0];
+	server_login_packet_part4[1] = SC->VERSION_OFFSET[1];
+	server_login_packet_part4[2] = SC->VERSION_OFFSET[2];
+	server_login_packet_part4[3] = SC->VERSION_OFFSET[3];
+
+	server_login_packet_part2[0] = SC->OFFSET_CHAR[0];
+	server_login_packet_part2[1] = SC->OFFSET_CHAR[1];
+	server_login_packet_part2[2] = SC->OFFSET_CHAR[2];
+	server_login_packet_part2[3] = SC->OFFSET_CHAR[3];
+
+	// SizePacket
+	server_login_packet_part1[1] = (unsigned char)(strlen(GC->Login) + sizeof(SC->OffsetPrimary) + sizeof(server_login_packet_part1) +
+		sizeof(server_login_packet_part2) + sizeof(server_login_packet_part3) + sizeof(server_login_packet_part4) +
+		sizeof(SC->OffsetSecondary) + sizeof(SC->VERSION_PANGYA) - 6) - 0x05;
+
+	// PART1
+	CopyStringPos(server_login_packet_full, server_login_packet_part1, sizeof(server_login_packet_part1), 0, 0);
+	CopyStringPos(server_login_packet_full, (unsigned char*)GC->Login, strlen(GC->Login),
+	              sizeof(server_login_packet_part1) - 1, 0);
+
+	// PART2
+	CopyStringPos(server_login_packet_full, server_login_packet_part2, sizeof(server_login_packet_part2),
+	              strlen(GC->Login) + sizeof(server_login_packet_part1) - 1, 0);
+	CopyStringPos(server_login_packet_full, (unsigned char*)SC->OffsetPrimary, sizeof(SC->OffsetPrimary),
+	              strlen(GC->Login) + sizeof(server_login_packet_part1) + sizeof(server_login_packet_part2) - 2, 0);
+
+	// PART3
+	CopyStringPos(server_login_packet_full, server_login_packet_part3, sizeof(server_login_packet_part3),
+	              strlen(GC->Login) + sizeof(SC->OffsetPrimary) + sizeof(server_login_packet_part1) + sizeof(
+		              server_login_packet_part2) - 3, 0);
+	CopyStringPos(server_login_packet_full, (unsigned char*)SC->VERSION_PANGYA, sizeof(SC->VERSION_PANGYA),
+	              strlen(GC->Login) + sizeof(SC->OffsetPrimary) + sizeof(server_login_packet_part1) + sizeof(
+		              server_login_packet_part2) + sizeof(server_login_packet_part3) - 4, 0);
+
+	// PART4
+	CopyStringPos(server_login_packet_full, server_login_packet_part4, sizeof(server_login_packet_part4),
+	              strlen(GC->Login) + sizeof(SC->OffsetPrimary) + sizeof(server_login_packet_part1) + sizeof(
+		              server_login_packet_part2) + sizeof(server_login_packet_part3) + sizeof(SC->VERSION_PANGYA) - 5,
+	              0);
+	CopyStringPos(server_login_packet_full, (unsigned char*)SC->OffsetSecondary, sizeof(SC->OffsetSecondary),
+	              strlen(GC->Login) + sizeof(SC->OffsetPrimary) + sizeof(server_login_packet_part1) + sizeof(
+		              server_login_packet_part2) + sizeof(server_login_packet_part3) + sizeof(server_login_packet_part4)
+	              + sizeof(SC->VERSION_PANGYA) - 6, 0);
+
+	//printf("************ Debug ************\n");
+	//ShowPacketInHex(server_login_packet_full, strlen(GC->Login)+sizeof(SC->OffsetPrimary)+sizeof(server_login_packet_part1)+sizeof(server_login_packet_part2)+sizeof(server_login_packet_part3)+sizeof(server_login_packet_part4)+sizeof(SC->OffsetSecondary)+sizeof(SC->VERSION_PANGYA)-7);
+
+	// SEND PACKET
+	//DEBUG_MODE_TYPE(1);
+	EncryptSendPacket((char*)server_login_packet_full,
+	                  strlen(GC->Login) + sizeof(SC->OffsetPrimary) + sizeof(server_login_packet_part1) + sizeof(
+		                  server_login_packet_part2) + sizeof(server_login_packet_part3) + sizeof(
+		                  server_login_packet_part4) + sizeof(SC->OffsetSecondary) + sizeof(SC->VERSION_PANGYA) - 7, 0);
+	//DEBUG_MODE_TYPE(0);
+	Sleep(100);
+
+	// RECV PACKET
+	GV->bytes_recv = DecryptRecvPacket(GV->packet_decrypt, (unsigned char*)GV->PacketRecv, sizeof(GV->PacketRecv) - 1);
+
+	/*if(tmp_byte < 35)
+	{
+	 InfoServer("Packet Error!\n");
+	 return 0;
+	}*/
+
+	return 1;
 }
 
-void DesconectLogin(struct GlobalVariables *GV)
+void DesconectLogin(struct GlobalVariables* GV)
 {
- EncryptSendPacket((char*)desconnect_client, sizeof(desconnect_client)-1, 0);
- Sleep(100);
- InfoServer("client desconectado!\n");
-          
- // RECV PACKET
- DecryptRecvPacket(GV->packet_decrypt, (unsigned char*)GV->packet_decrypt, sizeof(GV->PacketRecv)-1);
- Sleep(100);
+	EncryptSendPacket((char*)desconnect_client, sizeof(desconnect_client) - 1, 0);
+	Sleep(100);
+	InfoServer("client desconectado!\n");
+
+	// RECV PACKET
+	DecryptRecvPacket(GV->packet_decrypt, (unsigned char*)GV->packet_decrypt, sizeof(GV->PacketRecv) - 1);
+	Sleep(100);
 }

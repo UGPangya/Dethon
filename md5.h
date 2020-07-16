@@ -2,7 +2,8 @@
 #define MD5_DIGEST_LENGTH 16
 typedef unsigned int MD5_u32plus;
 
-typedef struct {
+typedef struct
+{
 	MD5_u32plus lo, hi;
 	MD5_u32plus a, b, c, d;
 	unsigned char buffer[64];

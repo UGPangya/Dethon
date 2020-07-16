@@ -1,10 +1,6 @@
-#ifndef __ROOM_H_
-#define __ROOM_H_
-
+#pragma once
 #include "library.h"
 #include "connect.h"
-#include "chat.h"
-#include "map.h"
 
 // MAPAS IDS
 #define BLUE_LAGOON     0x00
@@ -27,19 +23,19 @@
 #define ICE_INFERNO     0x12
 #define WIZCITY         0x13
 #define ABBOT_MINE      0x14
-        
+
 #define RANDOM 0x7f
 
-void RoomCopyStructInfo(struct GeralConfig *, struct ServerConfig *, struct GlobalVariables *);
+void RoomCopyStructInfo(struct GeralConfig*, struct ServerConfig*, struct GlobalVariables*);
 void ResetRoom();
-void create_room(char *room_name, int player_num, int hole_num, int type_map, unsigned int time_min, char *password);
-void enter_room(unsigned int ID_ROOM, char *password);
+void create_room(char* room_name, int player_num, int hole_num, int type_map, unsigned int time_min, char* password);
+void enter_room(unsigned int ID_ROOM, char* password);
 void ReadyRoom(bool type);
 
 void SetPassword(const char*);
 void SetRoomID(unsigned int);
 
-void SendRoomIDPlayer_and_confirmed(char *);
+void SendRoomIDPlayer_and_confirmed(char*);
 
 unsigned int GetPlayersConfirmed();
 void SetPlayersConfirmed(unsigned int);
@@ -50,5 +46,3 @@ void IncrementPlayersConfirmed();
 void StatusPause(bool);
 void IDRoomConfirmed(int);
 void TermineteThreadCheckShot();
-
-#endif

@@ -1,14 +1,7 @@
-#ifndef __PRACTICE_H_
-#define __PRACTICE_H_
-
-#include "connect.h"
-#include "map.h"
-#include "room.h"
+#pragma once
 #include "library.h"
+#include <windows.h>
 
-void PracticeCopyStructInfo(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV);
+void PracticeCopyStructInfo(struct GeralConfig* GC, struct ServerConfig* SC, struct GlobalVariables* GV);
 DWORD InitPractice(LPVOID);
 void TradeMapPractice();
-
-
-#endif

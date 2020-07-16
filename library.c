@@ -1,5 +1,11 @@
 #include "library.h"
 
+#include <stdio.h>
+#include <time.h>
+
+
+#include "color.h"
+
 BOOLEAN ThreadDialogOpen = FALSE;
 BOOLEAN ThreadRecvPacketOpen = FALSE;
 BOOLEAN ThreadConsoleOpen = FALSE;
@@ -9,406 +15,419 @@ unsigned int DEBUG_MODE;
 
 static char buf_time[80];
 
-unsigned int PacketStrLen(char *buffer, int size_buffer)
+unsigned int PacketStrLen(char* buffer, int size_buffer)
 {
- int tmp = 0;
- for(int i = 0; i < sizeof(size_buffer); i++)
- {
-  if(buffer[i] == 0x00)
-   break;
-  tmp++;
- }
- return tmp;
+	int tmp = 0;
+	for (int i = 0; i < sizeof(size_buffer); i++)
+	{
+		if (buffer[i] == 0x00)
+			break;
+		tmp++;
+	}
+	return tmp;
 }
 
 void DEBUG_MODE_TYPE(unsigned int TYPE)
 {
- DEBUG_MODE = TYPE;
+	DEBUG_MODE = TYPE;
 }
 
 unsigned int RECV_DEBUG_MODE_TYPE()
 {
- return DEBUG_MODE;
+	return DEBUG_MODE;
 }
 
-void MD5Convert(unsigned char *BufferMD5, unsigned char *DstMD5, int size)
+void MD5Convert(unsigned char* BufferMD5, unsigned char* DstMD5, int size)
 {
- int tmp_i;
- char tmp_c[2];
- int counter_DstMD5 = 0;
- for(int i = 0; i < size; i++)
- {
-  tmp_i = BufferMD5[i];
-  //itoa(tmp_i, tmp_c, 16);
-  sprintf_s(tmp_c, _countof(tmp_c), "%02X", tmp_i);
-  DstMD5[counter_DstMD5] = tmp_c[0];
-  counter_DstMD5++;
-  DstMD5[counter_DstMD5] = tmp_c[1];
-  counter_DstMD5++;
- }
+	int tmp_i;
+	char tmp_c[2];
+	int counter_DstMD5 = 0;
+	for (int i = 0; i < size; i++)
+	{
+		tmp_i = BufferMD5[i];
+		//itoa(tmp_i, tmp_c, 16);
+		sprintf_s(tmp_c, _countof(tmp_c), "%02X", tmp_i);
+		DstMD5[counter_DstMD5] = tmp_c[0];
+		counter_DstMD5++;
+		DstMD5[counter_DstMD5] = tmp_c[1];
+		counter_DstMD5++;
+	}
 }
 
-void CopyString(char *string1, char*string2, int size)
+void CopyString(char* string1, char* string2, int size)
 {
- for(int i = 0; i < size; i++)
- {
-  string1[i] = string2[i];
- }
+	for (int i = 0; i < size; i++)
+	{
+		string1[i] = string2[i];
+	}
 }
 
-bool CopyStringPos(unsigned char *string1, unsigned char *string2, int size, int pos1, int pos2)
+bool CopyStringPos(unsigned char* string1, unsigned char* string2, int size, int pos1, int pos2)
 {
- for(int i = 0; i < size; i++)
- {
-  string1[pos1] = string2[pos2];
-  pos1++;
-  pos2++;
- }
+	for (int i = 0; i < size; i++)
+	{
+		string1[pos1] = string2[pos2];
+		pos1++;
+		pos2++;
+	}
+	return 1;
 }
 
-bool CmpString(char*string1, char*string2, int size)
+bool CmpString(char* string1, char* string2, int size)
 {
- for(int i = 0; i < size; i++)
- {
-  if(string1[i] != string2[i])
-   return 0;
- }
- return 1;
+	for (int i = 0; i < size; i++)
+	{
+		if (string1[i] != string2[i])
+			return 0;
+	}
+	return 1;
 }
 
-bool CmpStringPos(unsigned char *string1, unsigned char *string2, int size, int pos1, int pos2)
+bool CmpStringPos(unsigned char* string1, unsigned char* string2, int size, int pos1, int pos2)
 {
- for(int i = 0; i < size; i++)
- {
-  if(string1[pos1] != string2[pos2])
-   return 0;
-   
-  pos1++;
-  pos2++;
- }
- 
- return 1;
+	for (int i = 0; i < size; i++)
+	{
+		if (string1[pos1] != string2[pos2])
+			return 0;
+
+		pos1++;
+		pos2++;
+	}
+
+	return 1;
 }
 
-void FailedServer(char *str_err)
+void FailedServer(char* str_err)
 {
-  currentDateTime();
-  setcolor(0);
-  printf("[%s] ", buf_time);
-  setcolor(1);
-  printf("[ERROR] ");
-  restcolor();
-  printf("%s", str_err);
+	currentDateTime();
+	setcolor(0);
+	printf("[%s] ", buf_time);
+	setcolor(1);
+	printf("[ERROR] ");
+	restcolor();
+	printf("%s", str_err);
 }
 
-void InfoServer(char *str_info)
+void InfoServer(char* str_info)
 {
- currentDateTime();
- setcolor(0);
- printf("[%s] ", buf_time);
- setcolor(3);
- printf("[INFO] ");
- restcolor();
- printf("%s", str_info);
+	currentDateTime();
+	setcolor(0);
+	printf("[%s] ", buf_time);
+	setcolor(3);
+	printf("[INFO] ");
+	restcolor();
+	printf("%s", str_info);
 }
 
-void AttackInfoServer(char *str_info)
+void AttackInfoServer(char* str_info)
 {
- currentDateTime();
- setcolor(0);
- printf("[%s] ", buf_time);
- setcolor(3);
- printf("[INFO] ");
- setcolor(2);
- printf("%s", str_info);
- restcolor();
+	currentDateTime();
+	setcolor(0);
+	printf("[%s] ", buf_time);
+	setcolor(3);
+	printf("[INFO] ");
+	setcolor(2);
+	printf("%s", str_info);
+	restcolor();
 }
 
-void ColorText(char *str_color, int color)
+void ColorText(char* str_color, int color)
 {
- currentDateTime();
- setcolor(0);
- printf("[%s] ", buf_time);
- setcolor(color);
- printf("%s", str_color);
- restcolor();
+	currentDateTime();
+	setcolor(0);
+	printf("[%s] ", buf_time);
+	setcolor(color);
+	printf("%s", str_color);
+	restcolor();
 }
 
-void InfoColor(char *str_info, int color)
+void InfoColor(char* str_info, int color)
 {
- currentDateTime();
- setcolor(0);
- printf("[%s] ", buf_time);
- setcolor(3);
- printf("[INFO] ");
- setcolor(color);
- printf("%s", str_info);
- restcolor();
+	currentDateTime();
+	setcolor(0);
+	printf("[%s] ", buf_time);
+	setcolor(3);
+	printf("[INFO] ");
+	setcolor(color);
+	printf("%s", str_info);
+	restcolor();
 }
 
-void LerConfig(struct GeralConfig *GC, struct ServerConfig *SC, char *file)
+void LerConfig(struct GeralConfig* GC, struct ServerConfig* SC, char* file)
 {
- char PATH_FILE[FILENAME_MAX];
- char PATH_FILE_TMP[FILENAME_MAX];
- char PATH_FILE_TMP_SERVER[FILENAME_MAX];
- char PATH_FILE_TMP_MASTER[FILENAME_MAX];
- 
- char text_sprintf[1024];
- 
- GetModuleFileName(NULL, PATH_FILE, FILENAME_MAX);
- 
- int i = strlen(PATH_FILE);
- 
- for(i; i > 0; i--)
- {
-  if(PATH_FILE[i] == '\\')
-  {
-   break;
-  }
- }
- 
- strncpy_s(PATH_FILE_TMP, _countof(PATH_FILE_TMP), PATH_FILE, i+1);
- PATH_FILE_TMP[i+1] = '\0';
- 
- strncpy_s(PATH_FILE_TMP_SERVER, _countof(PATH_FILE_TMP_SERVER), PATH_FILE, i+1);
- PATH_FILE_TMP_SERVER[i+1] = '\0';
- 
- strncpy_s(PATH_FILE_TMP_MASTER, _countof(PATH_FILE_TMP_MASTER), PATH_FILE, i+1);
- PATH_FILE_TMP_MASTER[i+1] = '\0';
- 
- strcat_s(PATH_FILE_TMP, _countof(PATH_FILE_TMP), file);
- strcat_s(PATH_FILE_TMP_SERVER, _countof(PATH_FILE_TMP_SERVER), "configserver.ini");
- strcat_s(PATH_FILE_TMP_MASTER, _countof(PATH_FILE_TMP_SERVER), "script.ini");
- 
- GetPrivateProfileString("GAME_UPDATED", "VERSION_CLIENT", "000.00", (char*)SC->VERSION_PANGYA, sizeof(SC->VERSION_PANGYA), PATH_FILE_TMP_MASTER);
- SC->VERSION_OFFSET[0] = GetPrivateProfileInt("GAME_UPDATED", "VERSION_OFFSET0", 0, PATH_FILE_TMP_MASTER);
- SC->VERSION_OFFSET[1] = GetPrivateProfileInt("GAME_UPDATED", "VERSION_OFFSET1", 0, PATH_FILE_TMP_MASTER);
- SC->VERSION_OFFSET[2] = GetPrivateProfileInt("GAME_UPDATED", "VERSION_OFFSET2", 0, PATH_FILE_TMP_MASTER);
- SC->VERSION_OFFSET[3] = GetPrivateProfileInt("GAME_UPDATED", "VERSION_OFFSET3", 0, PATH_FILE_TMP_MASTER);
- 
- SC->GAME_ACCESS_OFFSET = GetPrivateProfileInt("GAME_UPDATED", "OFFSET_PACKET_ACCESS", 0, PATH_FILE_TMP_MASTER);
- 
- SC->PCT_PANGYA = GetPrivateProfileInt("CONFIG_GAME_TYPE", "PCT_PANGYA", 0, PATH_FILE_TMP_MASTER);
- 
- SC->SPEED_SEND_PACKET = GetPrivateProfileInt("CONFIG_GAME_TYPE", "SPEED_SEND_PACKET", 0, PATH_FILE_TMP_MASTER);
- 
- SC->COMMON_CONFIRMED[0] = 0x00;
- SC->COMMON_CONFIRMED[1] = 0x00;
- SC->COMMON_CONFIRMED[2] = 0x00;
-  
- SC->TYPE_SCRIPT = GetPrivateProfileInt("DethonBot", "TYPE_SCRIPT", 3, PATH_FILE_TMP);
- 
- SC->QUANTITY_PLAYER_WAIT = GetPrivateProfileInt("MASTER_GAME_NORMAL", "QUANTITY_PLAYER_WAIT", 1, PATH_FILE_TMP_MASTER);
- GetPrivateProfileString("MASTER_GAME_NORMAL", "PLAYER_COMMON00", "NO_EXIST", (char*)SC->PLAYER_COMMON[0], sizeof(SC->PLAYER_COMMON[0]), PATH_FILE_TMP_MASTER);
- GetPrivateProfileString("MASTER_GAME_NORMAL", "PLAYER_COMMON01", "NO_EXIST", (char*)SC->PLAYER_COMMON[1], sizeof(SC->PLAYER_COMMON[1]), PATH_FILE_TMP_MASTER);
- GetPrivateProfileString("MASTER_GAME_NORMAL", "PLAYER_COMMON02", "NO_EXIST", (char*)SC->PLAYER_COMMON[2], sizeof(SC->PLAYER_COMMON[2]), PATH_FILE_TMP_MASTER);
- 
- GetPrivateProfileString("MASTER_GAME_NORMAL", "ROOM_NAME", "TESTE", (char*)SC->ROOM_NAME, sizeof(SC->ROOM_NAME), PATH_FILE_TMP_MASTER);
- GetPrivateProfileString("MASTER_GAME_NORMAL", "ROOM_PASSWORD", "123", (char*)SC->ROOM_PASSWORD, sizeof(SC->ROOM_PASSWORD), PATH_FILE_TMP_MASTER);
- 
- GetPrivateProfileString("PLAYER_GAME_NORMAL", "PM_PLAYER_MASTER", "MASTER", (char*)SC->PLAYER_MASTER, sizeof(SC->PLAYER_MASTER), PATH_FILE_TMP_MASTER);
-  
-  
- SC->NUMBER_PLAYER = GetPrivateProfileInt("MASTER_GAME_NORMAL", "NUMBER_PLAYER", 4, PATH_FILE_TMP_MASTER);
- SC->NUMBER_HOLE = GetPrivateProfileInt("MASTER_GAME_NORMAL", "NUMBER_HOLE", 18, PATH_FILE_TMP_MASTER);
- SC->TYPE_MAP = GetPrivateProfileInt("MASTER_GAME_NORMAL", "TYPE_MAP", 0, PATH_FILE_TMP_MASTER);
- SC->TIME_MIN  = GetPrivateProfileInt("MASTER_GAME_NORMAL", "TIME_MIN", 120, PATH_FILE_TMP_MASTER);
- 
- SC->OFFSET_CHAR[0] = 0x00;
- SC->OFFSET_CHAR[1] = 0x00;
- SC->OFFSET_CHAR[2] = 0x00;
- SC->OFFSET_CHAR[3] = 0x00;
- 
- GetPrivateProfileString("MASTER_GAME_NORMAL", "PLAYER_COMMON02", "NO_EXIST", (char*)SC->PLAYER_COMMON[2], sizeof(SC->PLAYER_COMMON[2]), PATH_FILE_TMP_MASTER);
- 
- GC->AutoLogin = GetPrivateProfileInt("DethonBot", "AUTOLOGIN", -1, PATH_FILE_TMP);
- if(GC->AutoLogin == -1)
- {
-  sprintf_s(text_sprintf, _countof(text_sprintf), "impossivel ler [%s]\n", file);
-  InfoServer(text_sprintf);
-  GC->AutoLogin = 0;
- }
- 
- char tmp[127];
- char subtmp[127];
- 
- /*SC->RELOAD_GAME = GetPrivateProfileInt("DethonBot", "RELOAD_GAME", 1, PATH_FILE_TMP);*/
- 
- for(int i = 0; i < MAX_SERVER_CONFIG-1; i++)
- {
-  sprintf_s(tmp, _countof(tmp), "SERVERNAME%02d", i);
-  GetPrivateProfileString("ConfigServer", tmp, "NO_SERVER", SC->SERVERNAME[i], sizeof(SC->SERVERNAME[i]), PATH_FILE_TMP_SERVER);
-  sprintf_s(tmp, _countof(tmp), "SERVERIP%02d", i);
-  GetPrivateProfileString("ConfigServer", tmp, "127.0.0.1", SC->SERVERIP[i], sizeof(SC->SERVERIP[i]), PATH_FILE_TMP_SERVER);
-  sprintf_s(tmp, _countof(tmp), "OFFSETSERVER%02d", i);
-  SC->OFFSETSERVER[i] = GetPrivateProfileInt("ConfigServer", tmp, 0, PATH_FILE_TMP_SERVER);
-  sprintf_s(tmp, _countof(tmp), "SERVERPORT%02d", i);
-  SC->SERVERPORT[i] = GetPrivateProfileInt("ConfigServer", tmp, 0, PATH_FILE_TMP_SERVER);
- } 
-  
- for(int x = 0; x < MAX_SERVER_CONFIG-1; x++)
- {
-  sprintf_s(tmp, _countof(tmp), "SERVER%02d", x);
-  for(int y = 0; y < MAX_SERVER_LOGIN_CONFIG-1; y++)
-  {
-   sprintf_s(subtmp, _countof(subtmp), "SUBSERVERNAME%d", y);
-   GetPrivateProfileString(tmp, subtmp, "NO_SERVER", (char*)SC->SUBSERVERNAME[x][y], sizeof(SC->SUBSERVERNAME[x][y]), PATH_FILE_TMP_SERVER);
-   sprintf_s(subtmp, _countof(subtmp), "OFFSETSUBSERVER%d", y);
-   SC->OFFSETSUBSERVER[x][y] = GetPrivateProfileInt(tmp, subtmp, 0, PATH_FILE_TMP_SERVER);
-  }
- }
- 
- SC->SELECT_SERVER = GetPrivateProfileInt("DethonBot", "SELECT_SERVER", 0, PATH_FILE_TMP);
- SC->SELECT_SUBSERVER = GetPrivateProfileInt("DethonBot", "SELECT_SUBSERVER", 0, PATH_FILE_TMP);
- 
- GetPrivateProfileString("DethonBot", "LOGIN", "user", GC->Login, sizeof(GC->Login), PATH_FILE_TMP);
- GetPrivateProfileString("DethonBot", "SENHA", "password", GC->Password, sizeof(GC->Password), PATH_FILE_TMP);
- 
- GetPrivateProfileString("DethonBot", "IP", "127.0.0.1", GC->Ip, sizeof(GC->Ip), PATH_FILE_TMP);
- GC->Port = GetPrivateProfileInt("DethonBot", "PORT", 10103, PATH_FILE_TMP);
+	char PATH_FILE[FILENAME_MAX];
+	char PATH_FILE_TMP[FILENAME_MAX];
+	char PATH_FILE_TMP_SERVER[FILENAME_MAX];
+	char PATH_FILE_TMP_MASTER[FILENAME_MAX];
 
- sprintf_s(text_sprintf, _countof(text_sprintf), "AUTOLOGIN   = %d\n", GC->AutoLogin);
- AttackInfoServer(text_sprintf);
+	char text_sprintf[1024];
 
- 
- if(GC->AutoLogin == 1)
- {
-  sprintf_s(text_sprintf, _countof(text_sprintf), "LOGIN      = %s\n", GC->Login);
-  AttackInfoServer(text_sprintf);
-  sprintf_s(text_sprintf, _countof(text_sprintf), "SENHA      = %s\n", GC->Password);
-  AttackInfoServer(text_sprintf);
- }
- sprintf_s(text_sprintf, _countof(text_sprintf), "IP          = %s\n", GC->Ip);
- AttackInfoServer(text_sprintf);
- sprintf_s(text_sprintf, _countof(text_sprintf), "PORTA       = %d\n", GC->Port);
- AttackInfoServer(text_sprintf);
- 
- sprintf_s(text_sprintf, _countof(text_sprintf), "VERSION     = %s\n", SC->VERSION_PANGYA);
- AttackInfoServer(text_sprintf);
- 
- /*sprintf(text_sprintf, "RELOAD TIME = %d MINUTOS\n", SC->RELOAD_GAME);
- AttackInfoServer(text_sprintf);*/
- 
- BarSpace();
+	GetModuleFileName(NULL, PATH_FILE, FILENAME_MAX);
+
+	int i;
+	for (i = strlen(PATH_FILE); i > 0; i--)
+	{
+		if (PATH_FILE[i] == '\\')
+		{
+			break;
+		}
+	}
+
+	strncpy_s(PATH_FILE_TMP, _countof(PATH_FILE_TMP), PATH_FILE, i + 1);
+	PATH_FILE_TMP[i + 1] = '\0';
+
+	strncpy_s(PATH_FILE_TMP_SERVER, _countof(PATH_FILE_TMP_SERVER), PATH_FILE, i + 1);
+	PATH_FILE_TMP_SERVER[i + 1] = '\0';
+
+	strncpy_s(PATH_FILE_TMP_MASTER, _countof(PATH_FILE_TMP_MASTER), PATH_FILE, i + 1);
+	PATH_FILE_TMP_MASTER[i + 1] = '\0';
+
+	strcat_s(PATH_FILE_TMP, _countof(PATH_FILE_TMP), file);
+	strcat_s(PATH_FILE_TMP_SERVER, _countof(PATH_FILE_TMP_SERVER), "configserver.ini");
+	strcat_s(PATH_FILE_TMP_MASTER, _countof(PATH_FILE_TMP_SERVER), "script.ini");
+
+	GetPrivateProfileString("GAME_UPDATED", "VERSION_CLIENT", "000.00", (char*)SC->VERSION_PANGYA,
+	                        sizeof(SC->VERSION_PANGYA), PATH_FILE_TMP_MASTER);
+	SC->VERSION_OFFSET[0] = GetPrivateProfileInt("GAME_UPDATED", "VERSION_OFFSET0", 0, PATH_FILE_TMP_MASTER);
+	SC->VERSION_OFFSET[1] = GetPrivateProfileInt("GAME_UPDATED", "VERSION_OFFSET1", 0, PATH_FILE_TMP_MASTER);
+	SC->VERSION_OFFSET[2] = GetPrivateProfileInt("GAME_UPDATED", "VERSION_OFFSET2", 0, PATH_FILE_TMP_MASTER);
+	SC->VERSION_OFFSET[3] = GetPrivateProfileInt("GAME_UPDATED", "VERSION_OFFSET3", 0, PATH_FILE_TMP_MASTER);
+
+	SC->GAME_ACCESS_OFFSET = GetPrivateProfileInt("GAME_UPDATED", "OFFSET_PACKET_ACCESS", 0, PATH_FILE_TMP_MASTER);
+
+	SC->PCT_PANGYA = GetPrivateProfileInt("CONFIG_GAME_TYPE", "PCT_PANGYA", 0, PATH_FILE_TMP_MASTER);
+
+	SC->SPEED_SEND_PACKET = GetPrivateProfileInt("CONFIG_GAME_TYPE", "SPEED_SEND_PACKET", 0, PATH_FILE_TMP_MASTER);
+
+	SC->COMMON_CONFIRMED[0] = 0x00;
+	SC->COMMON_CONFIRMED[1] = 0x00;
+	SC->COMMON_CONFIRMED[2] = 0x00;
+
+	SC->TYPE_SCRIPT = GetPrivateProfileInt("DethonBot", "TYPE_SCRIPT", 3, PATH_FILE_TMP);
+
+	SC->QUANTITY_PLAYER_WAIT = GetPrivateProfileInt("MASTER_GAME_NORMAL", "QUANTITY_PLAYER_WAIT", 1,
+	                                                PATH_FILE_TMP_MASTER);
+	GetPrivateProfileString("MASTER_GAME_NORMAL", "PLAYER_COMMON00", "NO_EXIST", (char*)SC->PLAYER_COMMON[0],
+	                        sizeof(SC->PLAYER_COMMON[0]), PATH_FILE_TMP_MASTER);
+	GetPrivateProfileString("MASTER_GAME_NORMAL", "PLAYER_COMMON01", "NO_EXIST", (char*)SC->PLAYER_COMMON[1],
+	                        sizeof(SC->PLAYER_COMMON[1]), PATH_FILE_TMP_MASTER);
+	GetPrivateProfileString("MASTER_GAME_NORMAL", "PLAYER_COMMON02", "NO_EXIST", (char*)SC->PLAYER_COMMON[2],
+	                        sizeof(SC->PLAYER_COMMON[2]), PATH_FILE_TMP_MASTER);
+
+	GetPrivateProfileString("MASTER_GAME_NORMAL", "ROOM_NAME", "TESTE", (char*)SC->ROOM_NAME, sizeof(SC->ROOM_NAME),
+	                        PATH_FILE_TMP_MASTER);
+	GetPrivateProfileString("MASTER_GAME_NORMAL", "ROOM_PASSWORD", "123", (char*)SC->ROOM_PASSWORD,
+	                        sizeof(SC->ROOM_PASSWORD), PATH_FILE_TMP_MASTER);
+
+	GetPrivateProfileString("PLAYER_GAME_NORMAL", "PM_PLAYER_MASTER", "MASTER", (char*)SC->PLAYER_MASTER,
+	                        sizeof(SC->PLAYER_MASTER), PATH_FILE_TMP_MASTER);
+
+
+	SC->NUMBER_PLAYER = GetPrivateProfileInt("MASTER_GAME_NORMAL", "NUMBER_PLAYER", 4, PATH_FILE_TMP_MASTER);
+	SC->NUMBER_HOLE = GetPrivateProfileInt("MASTER_GAME_NORMAL", "NUMBER_HOLE", 18, PATH_FILE_TMP_MASTER);
+	SC->TYPE_MAP = GetPrivateProfileInt("MASTER_GAME_NORMAL", "TYPE_MAP", 0, PATH_FILE_TMP_MASTER);
+	SC->TIME_MIN = GetPrivateProfileInt("MASTER_GAME_NORMAL", "TIME_MIN", 120, PATH_FILE_TMP_MASTER);
+
+	SC->OFFSET_CHAR[0] = 0x00;
+	SC->OFFSET_CHAR[1] = 0x00;
+	SC->OFFSET_CHAR[2] = 0x00;
+	SC->OFFSET_CHAR[3] = 0x00;
+
+	GetPrivateProfileString("MASTER_GAME_NORMAL", "PLAYER_COMMON02", "NO_EXIST", (char*)SC->PLAYER_COMMON[2],
+	                        sizeof(SC->PLAYER_COMMON[2]), PATH_FILE_TMP_MASTER);
+
+	GC->AutoLogin = GetPrivateProfileInt("DethonBot", "AUTOLOGIN", -1, PATH_FILE_TMP);
+	if (GC->AutoLogin == -1)
+	{
+		sprintf_s(text_sprintf, _countof(text_sprintf), "impossivel ler [%s]\n", file);
+		InfoServer(text_sprintf);
+		GC->AutoLogin = 0;
+	}
+
+	char tmp[127];
+	char subtmp[127];
+
+	/*SC->RELOAD_GAME = GetPrivateProfileInt("DethonBot", "RELOAD_GAME", 1, PATH_FILE_TMP);*/
+
+	for (int i = 0; i < MAX_SERVER_CONFIG - 1; i++)
+	{
+		sprintf_s(tmp, _countof(tmp), "SERVERNAME%02d", i);
+		GetPrivateProfileString("ConfigServer", tmp, "NO_SERVER", SC->SERVERNAME[i], sizeof(SC->SERVERNAME[i]),
+		                        PATH_FILE_TMP_SERVER);
+		sprintf_s(tmp, _countof(tmp), "SERVERIP%02d", i);
+		GetPrivateProfileString("ConfigServer", tmp, "127.0.0.1", SC->SERVERIP[i], sizeof(SC->SERVERIP[i]),
+		                        PATH_FILE_TMP_SERVER);
+		sprintf_s(tmp, _countof(tmp), "OFFSETSERVER%02d", i);
+		SC->OFFSETSERVER[i] = GetPrivateProfileInt("ConfigServer", tmp, 0, PATH_FILE_TMP_SERVER);
+		sprintf_s(tmp, _countof(tmp), "SERVERPORT%02d", i);
+		SC->SERVERPORT[i] = GetPrivateProfileInt("ConfigServer", tmp, 0, PATH_FILE_TMP_SERVER);
+	}
+
+	for (int x = 0; x < MAX_SERVER_CONFIG - 1; x++)
+	{
+		sprintf_s(tmp, _countof(tmp), "SERVER%02d", x);
+		for (int y = 0; y < MAX_SERVER_LOGIN_CONFIG - 1; y++)
+		{
+			sprintf_s(subtmp, _countof(subtmp), "SUBSERVERNAME%d", y);
+			GetPrivateProfileString(tmp, subtmp, "NO_SERVER", (char*)SC->SUBSERVERNAME[x][y],
+			                        sizeof(SC->SUBSERVERNAME[x][y]), PATH_FILE_TMP_SERVER);
+			sprintf_s(subtmp, _countof(subtmp), "OFFSETSUBSERVER%d", y);
+			SC->OFFSETSUBSERVER[x][y] = GetPrivateProfileInt(tmp, subtmp, 0, PATH_FILE_TMP_SERVER);
+		}
+	}
+
+	SC->SELECT_SERVER = GetPrivateProfileInt("DethonBot", "SELECT_SERVER", 0, PATH_FILE_TMP);
+	SC->SELECT_SUBSERVER = GetPrivateProfileInt("DethonBot", "SELECT_SUBSERVER", 0, PATH_FILE_TMP);
+
+	GetPrivateProfileString("DethonBot", "LOGIN", "user", GC->Login, sizeof(GC->Login), PATH_FILE_TMP);
+	GetPrivateProfileString("DethonBot", "SENHA", "password", GC->Password, sizeof(GC->Password), PATH_FILE_TMP);
+
+	GetPrivateProfileString("DethonBot", "IP", "127.0.0.1", GC->Ip, sizeof(GC->Ip), PATH_FILE_TMP);
+	GC->Port = GetPrivateProfileInt("DethonBot", "PORT", 10103, PATH_FILE_TMP);
+
+	sprintf_s(text_sprintf, _countof(text_sprintf), "AUTOLOGIN   = %d\n", GC->AutoLogin);
+	AttackInfoServer(text_sprintf);
+
+
+	if (GC->AutoLogin == 1)
+	{
+		sprintf_s(text_sprintf, _countof(text_sprintf), "LOGIN      = %s\n", GC->Login);
+		AttackInfoServer(text_sprintf);
+		sprintf_s(text_sprintf, _countof(text_sprintf), "SENHA      = %s\n", GC->Password);
+		AttackInfoServer(text_sprintf);
+	}
+	sprintf_s(text_sprintf, _countof(text_sprintf), "IP          = %s\n", GC->Ip);
+	AttackInfoServer(text_sprintf);
+	sprintf_s(text_sprintf, _countof(text_sprintf), "PORTA       = %d\n", GC->Port);
+	AttackInfoServer(text_sprintf);
+
+	sprintf_s(text_sprintf, _countof(text_sprintf), "VERSION     = %s\n", SC->VERSION_PANGYA);
+	AttackInfoServer(text_sprintf);
+
+	/*sprintf(text_sprintf, "RELOAD TIME = %d MINUTOS\n", SC->RELOAD_GAME);
+	AttackInfoServer(text_sprintf);*/
+
+	BarSpace();
 }
 
 void Log()
 {
- char text[80];
- BarSpace();
- TextCentralize("DethonBot By Firefox");
- BarSpace();
- sprintf_s(text, _countof(text), "Pangya Dethon");
- TextCentralize(text);
- BarSpace();
+	char text[80];
+	BarSpace();
+	TextCentralize("DethonBot By Firefox");
+	BarSpace();
+	sprintf_s(text, _countof(text), "Pangya Dethon");
+	TextCentralize(text);
+	BarSpace();
 }
 
 void BarSpace()
 {
- setcolor(1);
- printf("*******************************************************************************\n");
- restcolor();
+	setcolor(1);
+	printf("*******************************************************************************\n");
+	restcolor();
 }
 
-void TextCentralize(char *str)
+void TextCentralize(char* str)
 {
- setcolor(2);
- int pos = (int)(80-strlen(str))/2;
- for(int i = 0; i < pos; i++)
- {
-  printf(" ");
- }
- printf("%s\n", str);
- restcolor();
+	setcolor(2);
+	int pos = (int)(80 - strlen(str)) / 2;
+	for (int i = 0; i < pos; i++)
+	{
+		printf(" ");
+	}
+	printf("%s\n", str);
+	restcolor();
 }
 
-void SpaceText(char *buffer)
+void SpaceText(char* buffer)
 {
- for(int i = 0; i < strlen(buffer); i++)
- {
-  if(buffer[i] == '_')
-  {
-   buffer[i] = 0x20;
-  }
- }
+	for (size_t i = 0; i < strlen(buffer); i++)
+	{
+		if (buffer[i] == '_')
+		{
+			buffer[i] = 0x20;
+		}
+	}
 }
 
-void ShowPacketInHex(unsigned char *packet_buffer, unsigned int size)
+void ShowPacketInHex(unsigned char* packet_buffer, unsigned int size)
 {
- char DEBUG_MODE_BOX[1024];
- char CONVERT_TO_CHAR[4];
- 
- int COLUM_TYPE;
- 
- if(DEBUG_MODE == 1)
-  COLUM_TYPE = 16;
- else if(DEBUG_MODE == 2)
-  COLUM_TYPE = 23;
-  
- int TMP_DEBUGMOD = 0;
- int colum = 0;
- 
- for(int i = 0; i < size; i++)
- {
-  colum++;
-   
-  if(DEBUG_MODE == 1)
-  {
-   printf("\\x%02x", (unsigned char)packet_buffer[i]);
-  }
-  else if(DEBUG_MODE == 2)
-  {
-   sprintf_s(CONVERT_TO_CHAR, _countof(CONVERT_TO_CHAR), "%02X", (unsigned char)packet_buffer[i]);
-   DEBUG_MODE_BOX[TMP_DEBUGMOD] = CONVERT_TO_CHAR[0];
-   TMP_DEBUGMOD++;
-   DEBUG_MODE_BOX[TMP_DEBUGMOD] = CONVERT_TO_CHAR[1];
-   TMP_DEBUGMOD++;
-   DEBUG_MODE_BOX[TMP_DEBUGMOD] = ' ';
-   TMP_DEBUGMOD++;
-  }
-   
-  if(colum == COLUM_TYPE || i >= size-1)
-  {
-   if(DEBUG_MODE == 1)
-    printf("\n");
-   else if(DEBUG_MODE == 2)
-   {
-    DEBUG_MODE_BOX[TMP_DEBUGMOD] = 0x00;
-    AddStringToListBoxDebug(DEBUG_MODE_BOX);
-    TMP_DEBUGMOD = 0;
-   }
-   colum = 0;
-  }
- }
+	char DEBUG_MODE_BOX[1024];
+	char CONVERT_TO_CHAR[4];
+
+	int COLUM_TYPE = 0;
+
+	if (DEBUG_MODE == 1)
+		COLUM_TYPE = 16;
+	else if (DEBUG_MODE == 2)
+		COLUM_TYPE = 23;
+
+	int TMP_DEBUGMOD = 0;
+	int colum = 0;
+
+	for (unsigned i = 0; i < size; i++)
+	{
+		colum++;
+
+		if (DEBUG_MODE == 1)
+		{
+			printf("\\x%02x", (unsigned char)packet_buffer[i]);
+		}
+		else if (DEBUG_MODE == 2)
+		{
+			sprintf_s(CONVERT_TO_CHAR, _countof(CONVERT_TO_CHAR), "%02X", (unsigned char)packet_buffer[i]);
+			DEBUG_MODE_BOX[TMP_DEBUGMOD] = CONVERT_TO_CHAR[0];
+			TMP_DEBUGMOD++;
+			DEBUG_MODE_BOX[TMP_DEBUGMOD] = CONVERT_TO_CHAR[1];
+			TMP_DEBUGMOD++;
+			DEBUG_MODE_BOX[TMP_DEBUGMOD] = ' ';
+			TMP_DEBUGMOD++;
+		}
+
+		if (colum == COLUM_TYPE || i >= size - 1)
+		{
+			if (DEBUG_MODE == 1)
+				printf("\n");
+			else if (DEBUG_MODE == 2)
+			{
+				DEBUG_MODE_BOX[TMP_DEBUGMOD] = 0x00;
+				AddStringToListBoxDebug(DEBUG_MODE_BOX);
+				TMP_DEBUGMOD = 0;
+			}
+			colum = 0;
+		}
+	}
 }
 
-BOOLEAN LoadingLibrary(struct GlobalVariables *GV)
+BOOLEAN LoadingLibrary(struct GlobalVariables* GV)
 {
 	HINSTANCE uncompressDLL, gameguardDLL;
- if(uncompressDLL = LoadLibrary("uncompress.dll"))
- {
-  GV->UnCompressPacket = (uncompress_packet)GetProcAddress(uncompressDLL, "call_uncompress");
-  GV->CallEncryptMapPacket = (call_encrypt_map)GetProcAddress(uncompressDLL, "call_encrypt");
-  InfoServer("DLL uncompress.dll carregado com sucesso!\n");
- }
- else
- {
-  FailedServer("DLL uncompress.dll inexistente!\n");
-  return 0;
- }
-    
- if(gameguardDLL = LoadLibrary("gameguard.dll"))
- {
-  GV->GameGuardCall = (gameguard_init)GetProcAddress(gameguardDLL, "gameguard_init");
-  InfoServer("DLL gameguard.dll carregado com sucesso!\n");
- }
- else
- {
-  FailedServer("DLL gameguard.dll inexistente!\n");
-  return 0;
- }
+	if ((uncompressDLL = LoadLibrary("uncompress.dll")))
+	{
+		GV->UnCompressPacket = (uncompress_packet)GetProcAddress(uncompressDLL, "call_uncompress");
+		GV->CallEncryptMapPacket = (call_encrypt_map)GetProcAddress(uncompressDLL, "call_encrypt");
+		InfoServer("DLL uncompress.dll carregado com sucesso!\n");
+	}
+	else
+	{
+		FailedServer("DLL uncompress.dll inexistente!\n");
+		return 0;
+	}
+
+	if ((gameguardDLL = LoadLibrary("gameguard.dll")))
+	{
+		GV->GameGuardCall = (gameguard_init)GetProcAddress(gameguardDLL, "gameguard_init");
+		InfoServer("DLL gameguard.dll carregado com sucesso!\n");
+	}
+	else
+	{
+		FailedServer("DLL gameguard.dll inexistente!\n");
+		return 0;
+	}
+	return 1;
 }
- 
+
 /*
 char LocateGameDes[] = "C:\\SG Interactive\\Pangya\\GameGuard.des";
 char LocateGameMon[] = "C:\\SG Interactive\\Pangya\\GameGuard\\GameMon.des";
@@ -553,41 +572,41 @@ DWORD GetProcessID(const char* szExeName)
 	return 0;
 }*/
 
-void SetStatusDialog(BOOLEAN SetByteStatus) {ThreadDialogOpen = SetByteStatus;}
-void SetStatusRecvPacket(BOOLEAN SetByteStatus) {ThreadRecvPacketOpen = SetByteStatus;}
-void SetStatusConsole(BOOLEAN SetByteStatus) {ThreadConsoleOpen = SetByteStatus;}
-void SetStatusSendTimePacket(BOOLEAN SetByteStatus) {ThreadSendTimePacketOpen = SetByteStatus;}
+void SetStatusDialog(BOOLEAN SetByteStatus) { ThreadDialogOpen = SetByteStatus; }
+void SetStatusRecvPacket(BOOLEAN SetByteStatus) { ThreadRecvPacketOpen = SetByteStatus; }
+void SetStatusConsole(BOOLEAN SetByteStatus) { ThreadConsoleOpen = SetByteStatus; }
+void SetStatusSendTimePacket(BOOLEAN SetByteStatus) { ThreadSendTimePacketOpen = SetByteStatus; }
 
-BOOLEAN GetStatusDialog() {return ThreadDialogOpen;}
-BOOLEAN GetStatusRecvPacket() {return ThreadRecvPacketOpen;}
-BOOLEAN GetStatusConsole() {return ThreadConsoleOpen;}
-BOOLEAN GetStatusSendTimePacket() {return ThreadSendTimePacketOpen;}
+BOOLEAN GetStatusDialog() { return ThreadDialogOpen; }
+BOOLEAN GetStatusRecvPacket() { return ThreadRecvPacketOpen; }
+BOOLEAN GetStatusConsole() { return ThreadConsoleOpen; }
+BOOLEAN GetStatusSendTimePacket() { return ThreadSendTimePacketOpen; }
 
 void ShowCommand()
 {
- if(GetStatusDialog())
- {
-  BarSpace();
-  ColorText("/visual_mode (modo visual)\n", 2);
-  ColorText("/close_socket (desconecta do servidor)\n", 2);
-  ColorText("/commands (exibe lista de comando)\n", 2);
-  ColorText("/exit (fecha o programa)\n", 2);
-  BarSpace();
- }
- else
- {
-  AddStringToListBoxDebug("/visual_mode (modo visual)");
-  AddStringToListBoxDebug("/close_socket (desconecta do servidor)");
-  AddStringToListBoxDebug("/commands (exibe lista de comando)");
-  AddStringToListBoxDebug("/exit (fecha o programa)");
- }
+	if (GetStatusDialog())
+	{
+		BarSpace();
+		ColorText("/visual_mode (modo visual)\n", 2);
+		ColorText("/close_socket (desconecta do servidor)\n", 2);
+		ColorText("/commands (exibe lista de comando)\n", 2);
+		ColorText("/exit (fecha o programa)\n", 2);
+		BarSpace();
+	}
+	else
+	{
+		AddStringToListBoxDebug("/visual_mode (modo visual)");
+		AddStringToListBoxDebug("/close_socket (desconecta do servidor)");
+		AddStringToListBoxDebug("/commands (exibe lista de comando)");
+		AddStringToListBoxDebug("/exit (fecha o programa)");
+	}
 }
 
 void currentDateTime()
 {
- time_t     now = time(0);
- struct tm  tstruct;
+	time_t now = time(0);
+	struct tm tstruct;
 
- localtime_s(&tstruct, &now);
- strftime(buf_time, sizeof(buf_time), "%Y-%m-%d.%X", &tstruct);
+	localtime_s(&tstruct, &now);
+	strftime(buf_time, sizeof(buf_time), "%Y-%m-%d.%X", &tstruct);
 }

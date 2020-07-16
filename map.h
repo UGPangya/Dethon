@@ -1,17 +1,9 @@
-#ifndef __MAP_H_
-#define __MAP_H_
-
+#pragma once
 #include <stdbool.h>
-
+#include <windows.h>
 #include "library.h"
-#include "connect.h"
-#include "room.h"
-#include "game_server.h"
 
-// (1 = 1%)
-//#define PCT_PANGYA 100
-
-void MapCopyStructInfo(struct GeralConfig *, struct ServerConfig *, struct GlobalVariables *);
+void MapCopyStructInfo(struct GeralConfig*, struct ServerConfig*, struct GlobalVariables*);
 void InitGameMap();
 void InitPlayerMap();
 void ExitGame();
@@ -22,7 +14,7 @@ bool GetTurn();
 
 void shot();
 
-void Confirmed_Shot();             // Usado tanto pelo Master e pelo Player
+void Confirmed_Shot(); // Usado tanto pelo Master e pelo Player
 void SendTurnOK();
 void SendShotOK();
 
@@ -34,5 +26,3 @@ void RecvPacketTurn(bool __recv_turn);
 
 DWORD ThreadShotCounterCheck(LPVOID);
 void StatusShotCounterCheck(bool);
-
-#endif
