@@ -38,9 +38,9 @@ void CommandAccess(char *command)
   int tmp;
   char password[32];
   ColorText("ID_ROOM -> ", 4);
-  scanf("%d", &tmp);
+  scanf_s("%d", &tmp);
   ColorText("PASSWORD -> ", 4);
-  scanf("%s", password);
+  scanf_s("%s", password, _countof(password));
   enter_room(tmp, password);
  }
   
@@ -49,7 +49,7 @@ void CommandAccess(char *command)
   int tmp;
   char password[32];
   ColorText("ID_ROOM -> ", 4);
-  scanf("%d", &tmp);
+  scanf_s("%d", &tmp);
   enter_room(tmp, "");
  }
   

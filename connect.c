@@ -1,17 +1,18 @@
 #include "connect.h"
+#include "ws2tcpip.h"
 
 WSADATA data;
 SOCKET GSocket;
 SOCKADDR_IN addr_sock;
 
-bool init_connect(GeralConfig *GC)
+bool init_connect(struct GeralConfig *GC)
 {
  WSAStartup(0x202, &data);
  GSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
  
  addr_sock.sin_family = AF_INET;
  addr_sock.sin_port = htons(GC->Port);
- addr_sock.sin_addr.s_addr = inet_addr(GC->Ip);
+ inet_pton(AF_INET, GC->Ip, &addr_sock.sin_addr.s_addr);
  
  if(connect(GSocket, (SOCKADDR*)&addr_sock, sizeof(struct sockaddr)) == SOCKET_ERROR)
   return 0;
@@ -39,7 +40,7 @@ void EncryptSendPacket(char *buffer_send, unsigned int size, int size_finally)
  else if(RECV_DEBUG_MODE_TYPE() == 2)
   AddStringToListBoxDebug("Send Packet Encrypt");
   
- sprintf(msg_debug, "SIZE [%d] Send Packet", size_finally+size);
+ sprintf_s(msg_debug, _countof(msg_debug), "SIZE [%d] Send Packet", size_finally+size);
  AddStringToListBoxDebug(msg_debug);
   
  unsigned char *buffer_encrypt = (unsigned char*)malloc(sizeof(unsigned char)*size+4);

@@ -5,9 +5,9 @@
 #include "connect.h"
 #include "map.h"
 
-void RecvChatMsg(GlobalVariables *GV, ServerConfig *SC);
-void SendChatMsg(GlobalVariables *GV, char*);
-void SendPMMsg(GlobalVariables *GV, char*, char*);
-void GetNick(GlobalVariables *GV);
+void RecvChatMsg(struct GlobalVariables *GV, struct ServerConfig *SC);
+void SendChatMsg(struct GlobalVariables *GV, char*);
+void SendPMMsg(struct GlobalVariables *GV, char*, char*);
+void GetNick(struct GlobalVariables *GV);
 
 #endif

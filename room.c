@@ -62,13 +62,13 @@ unsigned int tmp;
 unsigned int ROOM_ID;
 unsigned char PASSWORD[32];
 
-GeralConfig *RpGC;
-ServerConfig *RpSC;
-GlobalVariables *RpGV;
+struct GeralConfig *RpGC;
+struct ServerConfig *RpSC;
+struct GlobalVariables *RpGV;
 
 static int quantity_player_confirmed = 0;
 
-void RoomCopyStructInfo(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
+void RoomCopyStructInfo(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV)
 {
  RpGC = GC;
  RpSC = SC;
@@ -161,7 +161,7 @@ void ReadyRoom(bool type)
 
 void SetPassword(const char *r_password)
 {
- strcpy((char*)PASSWORD, r_password);
+ strcpy_s(PASSWORD, _countof(PASSWORD), r_password);
 }
 
 void SetRoomID(unsigned int id_room)
@@ -171,7 +171,7 @@ void SetRoomID(unsigned int id_room)
 
 void SendRoomIDPlayer_and_confirmed(char *player)
 {
- sprintf((char*)_buffer_tmp, "ROOM_SEND ID [%d] PASSWORD [%s", ROOM_ID, PASSWORD);
+ sprintf_s((char *)_buffer_tmp, _countof(_buffer_tmp), "ROOM_SEND ID [%d] PASSWORD [%s", ROOM_ID, PASSWORD);
  SendPMMsg(RpGV, (char*)_buffer_tmp, player);
 }
 
@@ -181,30 +181,30 @@ DWORD MasterPlayerGame(LPVOID Param)
  {
   if(i >= RpSC->QUANTITY_PLAYER_WAIT)
    break;
-  sprintf(RpGV->CInfo, "ENVIANDO RESET PARA O PLAYER [%s]\n", RpSC->PLAYER_COMMON[i]);
+  sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "ENVIANDO RESET PARA O PLAYER [%s]\n", RpSC->PLAYER_COMMON[i]);
   InfoServer(RpGV->CInfo);
   SendPMMsg(RpGV, "reset_system_now", RpSC->PLAYER_COMMON[i]);
  }
  
  Sleep(1000);
    
- strcpy((char*)PASSWORD, RpSC->ROOM_PASSWORD);
+ strcpy_s((char*)PASSWORD, _countof(PASSWORD), RpSC->ROOM_PASSWORD);
  
  InfoServer("CRIANDO SALA\n");
  
- sprintf(RpGV->CInfo, "NAME [%s] PASSWORD [%s]\n", RpSC->ROOM_NAME, RpSC->ROOM_PASSWORD);
+ sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "NAME [%s] PASSWORD [%s]\n", RpSC->ROOM_NAME, RpSC->ROOM_PASSWORD);
  InfoServer(RpGV->CInfo);
  
  create_room(RpSC->ROOM_NAME, RpSC->NUMBER_PLAYER, RpSC->NUMBER_HOLE, RpSC->TYPE_MAP, RpSC->TIME_MIN, RpSC->ROOM_PASSWORD);
  
  Sleep(2000);
  
- sprintf(RpGV->CInfo, "SALA_ID -> [%d]\n", ROOM_ID);
+ sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "SALA_ID -> [%d]\n", ROOM_ID);
  InfoServer(RpGV->CInfo);
  
  while(GetStatusRecvPacket() == TRUE)
  { 
-  sprintf(RpGV->CInfo, "AGUARDANDO PLAYERS [%d/%d]\n", quantity_player_confirmed, RpSC->QUANTITY_PLAYER_WAIT);
+     sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "AGUARDANDO PLAYERS [%d/%d]\n", quantity_player_confirmed, RpSC->QUANTITY_PLAYER_WAIT);
   InfoServer(RpGV->CInfo);
   
   RpSC->TYPE_SCRIPT = 0x04; // Status OK, MasterGame
@@ -215,7 +215,7 @@ DWORD MasterPlayerGame(LPVOID Param)
    {
     if(RpSC->COMMON_CONFIRMED[i] == 0x01)
     {
-     sprintf(RpGV->CInfo, "SEND ID_ROOM E PASSWORD PARA [%s]\n", RpSC->PLAYER_COMMON[i]);
+        sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "SEND ID_ROOM E PASSWORD PARA [%s]\n", RpSC->PLAYER_COMMON[i]);
      InfoServer(RpGV->CInfo);
      SendRoomIDPlayer_and_confirmed(RpSC->PLAYER_COMMON[i]);
     
@@ -282,7 +282,7 @@ DWORD CommomPlayerGame(LPVOID Param)
     break;
    if(!pause_status)
    {
-    sprintf(RpGV->CInfo, "ENVIANDO REQUISITO PARA O MASTER [%s]\n", RpSC->PLAYER_MASTER);
+       sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "ENVIANDO REQUISITO PARA O MASTER [%s]\n", RpSC->PLAYER_MASTER);
     InfoServer(RpGV->CInfo);
   
     SendPMMsg(RpGV, "sendme_info_room", RpSC->PLAYER_MASTER);
@@ -294,7 +294,7 @@ DWORD CommomPlayerGame(LPVOID Param)
   {
    if(id_room_confirmed != RpSC->P_ROOM_ID)
    {
-    sprintf(RpGV->CInfo, "REQUISITO RECEBIDO SALA [%d] PASSWORD [%s]\n", RpSC->P_ROOM_ID, RpSC->P_PASSWORD_ROOM);
+       sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "REQUISITO RECEBIDO SALA [%d] PASSWORD [%s]\n", RpSC->P_ROOM_ID, RpSC->P_PASSWORD_ROOM);
     InfoServer(RpGV->CInfo);
  
     enter_room(RpSC->P_ROOM_ID, RpSC->P_PASSWORD_ROOM);
@@ -354,7 +354,7 @@ void DecrementPlayersConfirmed()
  if((RpSC->TYPE_SCRIPT == 0x04) || (RpSC->TYPE_SCRIPT == 0x01))
  {
   quantity_player_confirmed--;
-  sprintf(RpGV->CInfo, "AGUARDANDO PLAYERS [%d/%d]\n", quantity_player_confirmed, RpSC->QUANTITY_PLAYER_WAIT);
+  sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "AGUARDANDO PLAYERS [%d/%d]\n", quantity_player_confirmed, RpSC->QUANTITY_PLAYER_WAIT);
   InfoServer(RpGV->CInfo);
  }
 }
@@ -362,7 +362,7 @@ void DecrementPlayersConfirmed()
 void DecrementPlayersMap()
 {
  quantity_player_confirmed--;
- sprintf(RpGV->CInfo, "PLAYERS [%d/%d]\n", quantity_player_confirmed, RpSC->QUANTITY_PLAYER_WAIT);
+ sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "PLAYERS [%d/%d]\n", quantity_player_confirmed, RpSC->QUANTITY_PLAYER_WAIT);
  InfoServer(RpGV->CInfo);
  //if((quantity_player_confirmed <= 0x00))
   //ReturnRoom();
@@ -373,7 +373,7 @@ void IncrementPlayersConfirmed()
  if((RpSC->TYPE_SCRIPT == 0x04) || (RpSC->TYPE_SCRIPT == 0x01))
  {
   quantity_player_confirmed++;
-  sprintf(RpGV->CInfo, "AGUARDANDO PLAYERS [%d/%d]\n", quantity_player_confirmed, RpSC->QUANTITY_PLAYER_WAIT);
+  sprintf_s(RpGV->CInfo, _countof(RpGV->CInfo), "AGUARDANDO PLAYERS [%d/%d]\n", quantity_player_confirmed, RpSC->QUANTITY_PLAYER_WAIT);
   InfoServer(RpGV->CInfo);
  }
 }

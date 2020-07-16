@@ -1,6 +1,8 @@
 #ifndef __MAP_H_
 #define __MAP_H_
 
+#include <stdbool.h>
+
 #include "library.h"
 #include "connect.h"
 #include "room.h"
@@ -9,7 +11,7 @@
 // (1 = 1%)
 //#define PCT_PANGYA 100
 
-void MapCopyStructInfo(GeralConfig *, ServerConfig *, GlobalVariables *);
+void MapCopyStructInfo(struct GeralConfig *, struct ServerConfig *, struct GlobalVariables *);
 void InitGameMap();
 void InitPlayerMap();
 void ExitGame();

@@ -1,5 +1,7 @@
 #include "map.h"
 
+#include <stdbool.h>
+
 unsigned char packet_loading_map_part1[] = "\x05\x07\x00\x72\xB9\x0E\x00\x90\x00\x00\x00";
 unsigned char packet_loading_map_part2[] = "\xB4\x14\x00\x73\xBA\x0C\x00\x07\x33\xCD\x0E\x00\x00\x00\x00\x00\x59\x00\x43\x03\x02\x00\x00\x14";
 //unsigned char packet_loading_map_part3[] = "\xED\x04\x00\x00\x00\x1D\x00\x00";
@@ -22,11 +24,11 @@ static unsigned int recv_turn;
 static unsigned int counter_time_shot = COUNTER_TIME_SHOT;
 static bool status_shotcheck = 0x00;
 
-GeralConfig *MpGC;
-ServerConfig *MpSC;
-GlobalVariables *MpGV;
+struct GeralConfig *MpGC;
+struct ServerConfig *MpSC;
+struct GlobalVariables *MpGV;
 
-void MapCopyStructInfo(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
+void MapCopyStructInfo(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV)
 {
  MpGC = GC;
  MpSC = SC;
@@ -248,14 +250,14 @@ void shot()
  
  if(pct <= MpSC->PCT_PANGYA)
  {
-  sprintf(MpGV->CInfo, "ACERTOU PANGYA PCT PROGRAMADA [%d] PCT RAND [%d]\n", MpSC->PCT_PANGYA, pct);
+  sprintf_s(MpGV->CInfo, _countof(MpGV->CInfo), "ACERTOU PANGYA PCT PROGRAMADA [%d] PCT RAND [%d]\n", MpSC->PCT_PANGYA, pct);
   InfoColor(MpGV->CInfo, 2);
   PacketSoma(packet_shot_part4_shot_pangya, sizeof(packet_shot_part4_shot_pangya)-1, 0);
   EncryptSendPacket((char*)packet_shot_part4_shot_pangya, sizeof(packet_shot_part4_shot_pangya)-1, 0);
  }
  else
  {
-  sprintf(MpGV->CInfo, "ERROU PANGYA PCT PROGRAMADA [%d] PCT RAND [%d]\n", MpSC->PCT_PANGYA, pct);
+     sprintf_s(MpGV->CInfo, _countof(MpGV->CInfo), "ERROU PANGYA PCT PROGRAMADA [%d] PCT RAND [%d]\n", MpSC->PCT_PANGYA, pct);
   InfoColor(MpGV->CInfo, 1);
   PacketSoma(packet_shot_part4_shot_normal, sizeof(packet_shot_part4_shot_normal)-1, 0);
   EncryptSendPacket((char*)packet_shot_part4_shot_normal, sizeof(packet_shot_part4_shot_normal)-1, 0);
@@ -432,8 +434,9 @@ void RecvPacketTurn(bool __recv_turn)
  recv_turn = __recv_turn;
 }
 
-DWORD ThreadShotCounterCheck(LPVOID)
+DWORD ThreadShotCounterCheck(LPVOID param)
 {
+    UNREFERENCED_PARAMETER(param);
  while(true)
  {
   Sleep(1000);

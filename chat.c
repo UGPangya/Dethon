@@ -15,7 +15,7 @@ char send_msg_part2[] = "\x09\x00";
 
 char buffer_tmp[4024];
 
-void RecvChatMsg(GlobalVariables *GV, ServerConfig *SC)
+void RecvChatMsg(struct GlobalVariables *GV, struct ServerConfig *SC)
 {
  int tmp;
  int aux;
@@ -28,16 +28,16 @@ void RecvChatMsg(GlobalVariables *GV, ServerConfig *SC)
  
  if(((aux == 0x00) || (aux == 0x01)) && (tmp <= (sizeof(buffer_tmp)-1024)))
  {
-  strcpy(buffer_tmp, buffer_tmp+5);
+  strcpy_s(buffer_tmp, _countof(buffer_tmp), buffer_tmp+5);
   buffer_tmp[tmp-1] = 0x20;
   buffer_tmp[tmp] = ':';
   buffer_tmp[tmp+1] = 0x20;
-  strcpy(buffer_tmp+tmp+2, buffer_tmp+5+tmp+1);
+  strcpy_s(buffer_tmp+tmp+2, _countof(buffer_tmp) - tmp - 2, buffer_tmp+5+tmp+1);
   AddStringToListBoxChat(buffer_tmp);
  }
  else
  {
-  sprintf(GV->CInfo, "%s não está online", buffer_tmp+5);
+  sprintf_s(GV->CInfo, _countof(GV->CInfo), "%s não está online", buffer_tmp+5);
   AddStringToListBoxChat(GV->CInfo);
  }
  
@@ -91,7 +91,7 @@ void RecvChatMsg(GlobalVariables *GV, ServerConfig *SC)
   if(CmpString("ROOM_SEND ID", buffer_tmp+tmp+2, sizeof("ROOM_SEND ID")-1))
   {
    if(SC->TYPE_SCRIPT == 0x00)
-    sscanf(buffer_tmp+tmp+2, "ROOM_SEND ID [%d] PASSWORD [%s]", &SC->P_ROOM_ID, SC->P_PASSWORD_ROOM);
+    sscanf_s(buffer_tmp+tmp+2, "ROOM_SEND ID [%d] PASSWORD [%s]", &SC->P_ROOM_ID, SC->P_PASSWORD_ROOM, _countof(SC->P_PASSWORD_ROOM));
   }
  }
  
@@ -105,7 +105,7 @@ void RecvChatMsg(GlobalVariables *GV, ServerConfig *SC)
     {
      if((SC->COMMON_CONFIRMED[i] == 0x00) && (SC->TYPE_SCRIPT == 0x04))
      {
-      sprintf(GV->CInfo, "[%d] REQUISITO DE %s RECEBIDO COM SUCESSO\n", i, SC->PLAYER_COMMON[i]);
+      sprintf_s(GV->CInfo, _countof(GV->CInfo), "[%d] REQUISITO DE %s RECEBIDO COM SUCESSO\n", i, SC->PLAYER_COMMON[i]);
       InfoServer(GV->CInfo);
       SC->COMMON_CONFIRMED[i] = 0x01;
      }
@@ -125,7 +125,7 @@ void RecvChatMsg(GlobalVariables *GV, ServerConfig *SC)
  memset(buffer_tmp, 0, sizeof(buffer_tmp)-1);
 }
 
-void SendChatMsg(GlobalVariables *GV, char *msg_send)
+void SendChatMsg(struct GlobalVariables *GV, char *msg_send)
 {  
  char buffer_tmp[127]; 
  send_msg_part1[0] = rand() % 0xFE + 0x01;
@@ -139,11 +139,11 @@ void SendChatMsg(GlobalVariables *GV, char *msg_send)
  CopyStringPos((unsigned char*)buffer_tmp, (unsigned char*)send_msg_part2, sizeof(send_msg_part2)-1, strlen(GV->NickName)+sizeof(send_msg_part1)-1, 0);
  CopyStringPos((unsigned char*)buffer_tmp, (unsigned char*)msg_send, strlen(msg_send), sizeof(send_msg_part2)+strlen(GV->NickName)+sizeof(send_msg_part1)-2, 0);
  EncryptSendPacket((char*)buffer_tmp,  strlen(msg_send)+sizeof(send_msg_part2)+strlen(GV->NickName)+sizeof(send_msg_part1)-2, 0);
- sprintf(GV->CInfo, "SIZE [%d] Send Packet", strlen(msg_send)+sizeof(send_msg_part2)+strlen(GV->NickName)+sizeof(send_msg_part1)-3);
+ sprintf_s(GV->CInfo, _countof(GV->CInfo), "SIZE [%d] Send Packet", strlen(msg_send)+sizeof(send_msg_part2)+strlen(GV->NickName)+sizeof(send_msg_part1)-3);
  AddStringToListBoxDebug(GV->CInfo);
 }
 
-void SendPMMsg(GlobalVariables *GV, char *msg_send, char *player)
+void SendPMMsg(struct GlobalVariables *GV, char *msg_send, char *player)
 {
  char buffer_tmp[127];
  send_msg_part1[0] = rand() % 0xFE + 0x01;
@@ -158,17 +158,17 @@ void SendPMMsg(GlobalVariables *GV, char *msg_send, char *player)
  CopyStringPos((unsigned char*)buffer_tmp, (unsigned char*)send_msg_part2, sizeof(send_msg_part2)-1, strlen(player)+sizeof(send_msg_part1)-1, 0);
  CopyStringPos((unsigned char*)buffer_tmp, (unsigned char*)msg_send, strlen(msg_send), sizeof(send_msg_part2)+strlen(player)+sizeof(send_msg_part1)-2, 0);
  EncryptSendPacket((char*)buffer_tmp,  strlen(msg_send)+sizeof(send_msg_part2)+strlen(player)+sizeof(send_msg_part1)-2, 0);
- sprintf(GV->CInfo, "SIZE [%d] Send Packet", strlen(msg_send)+sizeof(send_msg_part2)+strlen(player)+sizeof(send_msg_part1)-3);
+ sprintf_s(GV->CInfo, _countof(GV->CInfo), "SIZE [%d] Send Packet", strlen(msg_send)+sizeof(send_msg_part2)+strlen(player)+sizeof(send_msg_part1)-3);
  AddStringToListBoxDebug(GV->CInfo);
 }
 
-void GetNick(GlobalVariables *GV)
+void GetNick(struct GlobalVariables *GV)
 { 
  //if(GV->packet_decrypt[7] != 0x33)
  //{
   //GV->UnCompressPacket((unsigned char*)GV->packet_decrypt, GV->bytes_recv_piece, GV->packet_decrypt+4);
   int tmp = GV->packet_decrypt[3];
-  strcpy((char*)GV->NickName, (char*)GV->packet_decrypt+tmp+4+21); 
+  strcpy_s(GV->NickName, _countof(GV->NickName), (char*)GV->packet_decrypt+tmp+4+21); 
  //}
  /*else
  {
@@ -190,9 +190,9 @@ void GetNick(GlobalVariables *GV)
   */
  //}
  
- sprintf(GV->CInfo, "NickName: [%s]\n", GV->NickName);
+ sprintf_s(GV->CInfo, _countof(GV->CInfo), "NickName: [%s]\n", GV->NickName);
  ColorText(GV->CInfo, 4);
  
- sprintf(GV->CInfo, "DethonBot : conectado com %s", GV->NickName);
+ sprintf_s(GV->CInfo, _countof(GV->CInfo), "DethonBot : conectado com %s", GV->NickName);
  SetConsoleTitle(GV->CInfo);
 }

@@ -11,7 +11,7 @@ static char buf_time[80];
 
 unsigned int PacketStrLen(char *buffer, int size_buffer)
 {
- int tmp;
+ int tmp = 0;
  for(int i = 0; i < sizeof(size_buffer); i++)
  {
   if(buffer[i] == 0x00)
@@ -40,7 +40,7 @@ void MD5Convert(unsigned char *BufferMD5, unsigned char *DstMD5, int size)
  {
   tmp_i = BufferMD5[i];
   //itoa(tmp_i, tmp_c, 16);
-  sprintf(tmp_c, "%02X", tmp_i);
+  sprintf_s(tmp_c, _countof(tmp_c), "%02X", tmp_i);
   DstMD5[counter_DstMD5] = tmp_c[0];
   counter_DstMD5++;
   DstMD5[counter_DstMD5] = tmp_c[1];
@@ -146,7 +146,7 @@ void InfoColor(char *str_info, int color)
  restcolor();
 }
 
-void LerConfig(GeralConfig *GC, ServerConfig *SC, char *file)
+void LerConfig(struct GeralConfig *GC, struct ServerConfig *SC, char *file)
 {
  char PATH_FILE[FILENAME_MAX];
  char PATH_FILE_TMP[FILENAME_MAX];
@@ -167,18 +167,18 @@ void LerConfig(GeralConfig *GC, ServerConfig *SC, char *file)
   }
  }
  
- strncpy(PATH_FILE_TMP, PATH_FILE, i+1);
+ strncpy_s(PATH_FILE_TMP, _countof(PATH_FILE_TMP), PATH_FILE, i+1);
  PATH_FILE_TMP[i+1] = '\0';
  
- strncpy(PATH_FILE_TMP_SERVER, PATH_FILE, i+1);
+ strncpy_s(PATH_FILE_TMP_SERVER, _countof(PATH_FILE_TMP_SERVER), PATH_FILE, i+1);
  PATH_FILE_TMP_SERVER[i+1] = '\0';
  
- strncpy(PATH_FILE_TMP_MASTER, PATH_FILE, i+1);
+ strncpy_s(PATH_FILE_TMP_MASTER, _countof(PATH_FILE_TMP_MASTER), PATH_FILE, i+1);
  PATH_FILE_TMP_MASTER[i+1] = '\0';
  
- strcat(PATH_FILE_TMP, file);
- strcat(PATH_FILE_TMP_SERVER, "configserver.ini");
- strcat(PATH_FILE_TMP_MASTER, "script.ini");
+ strcat_s(PATH_FILE_TMP, _countof(PATH_FILE_TMP), file);
+ strcat_s(PATH_FILE_TMP_SERVER, _countof(PATH_FILE_TMP_SERVER), "configserver.ini");
+ strcat_s(PATH_FILE_TMP_MASTER, _countof(PATH_FILE_TMP_SERVER), "script.ini");
  
  GetPrivateProfileString("GAME_UPDATED", "VERSION_CLIENT", "000.00", (char*)SC->VERSION_PANGYA, sizeof(SC->VERSION_PANGYA), PATH_FILE_TMP_MASTER);
  SC->VERSION_OFFSET[0] = GetPrivateProfileInt("GAME_UPDATED", "VERSION_OFFSET0", 0, PATH_FILE_TMP_MASTER);
@@ -224,7 +224,7 @@ void LerConfig(GeralConfig *GC, ServerConfig *SC, char *file)
  GC->AutoLogin = GetPrivateProfileInt("DethonBot", "AUTOLOGIN", -1, PATH_FILE_TMP);
  if(GC->AutoLogin == -1)
  {
-  sprintf(text_sprintf, "impossivel ler [%s]\n", file);
+  sprintf_s(text_sprintf, _countof(text_sprintf), "impossivel ler [%s]\n", file);
   InfoServer(text_sprintf);
   GC->AutoLogin = 0;
  }
@@ -236,24 +236,24 @@ void LerConfig(GeralConfig *GC, ServerConfig *SC, char *file)
  
  for(int i = 0; i < MAX_SERVER_CONFIG-1; i++)
  {
-  sprintf(tmp, "SERVERNAME%02d", i);
+  sprintf_s(tmp, _countof(tmp), "SERVERNAME%02d", i);
   GetPrivateProfileString("ConfigServer", tmp, "NO_SERVER", SC->SERVERNAME[i], sizeof(SC->SERVERNAME[i]), PATH_FILE_TMP_SERVER);
-  sprintf(tmp, "SERVERIP%02d", i);
+  sprintf_s(tmp, _countof(tmp), "SERVERIP%02d", i);
   GetPrivateProfileString("ConfigServer", tmp, "127.0.0.1", SC->SERVERIP[i], sizeof(SC->SERVERIP[i]), PATH_FILE_TMP_SERVER);
-  sprintf(tmp, "OFFSETSERVER%02d", i);
+  sprintf_s(tmp, _countof(tmp), "OFFSETSERVER%02d", i);
   SC->OFFSETSERVER[i] = GetPrivateProfileInt("ConfigServer", tmp, 0, PATH_FILE_TMP_SERVER);
-  sprintf(tmp, "SERVERPORT%02d", i);
+  sprintf_s(tmp, _countof(tmp), "SERVERPORT%02d", i);
   SC->SERVERPORT[i] = GetPrivateProfileInt("ConfigServer", tmp, 0, PATH_FILE_TMP_SERVER);
  } 
   
  for(int x = 0; x < MAX_SERVER_CONFIG-1; x++)
  {
-  sprintf(tmp, "SERVER%02d", x);
+  sprintf_s(tmp, _countof(tmp), "SERVER%02d", x);
   for(int y = 0; y < MAX_SERVER_LOGIN_CONFIG-1; y++)
   {
-   sprintf(subtmp, "SUBSERVERNAME%d", y);
+   sprintf_s(subtmp, _countof(subtmp), "SUBSERVERNAME%d", y);
    GetPrivateProfileString(tmp, subtmp, "NO_SERVER", (char*)SC->SUBSERVERNAME[x][y], sizeof(SC->SUBSERVERNAME[x][y]), PATH_FILE_TMP_SERVER);
-   sprintf(subtmp, "OFFSETSUBSERVER%d", y);
+   sprintf_s(subtmp, _countof(subtmp), "OFFSETSUBSERVER%d", y);
    SC->OFFSETSUBSERVER[x][y] = GetPrivateProfileInt(tmp, subtmp, 0, PATH_FILE_TMP_SERVER);
   }
  }
@@ -266,24 +266,24 @@ void LerConfig(GeralConfig *GC, ServerConfig *SC, char *file)
  
  GetPrivateProfileString("DethonBot", "IP", "127.0.0.1", GC->Ip, sizeof(GC->Ip), PATH_FILE_TMP);
  GC->Port = GetPrivateProfileInt("DethonBot", "PORT", 10103, PATH_FILE_TMP);
- 
- sprintf(text_sprintf, "AUTOLOGIN   = %d\n", GC->AutoLogin);
+
+ sprintf_s(text_sprintf, _countof(text_sprintf), "AUTOLOGIN   = %d\n", GC->AutoLogin);
  AttackInfoServer(text_sprintf);
 
  
  if(GC->AutoLogin == 1)
  {
-  sprintf(text_sprintf, "LOGIN      = %s\n", GC->Login);
+  sprintf_s(text_sprintf, _countof(text_sprintf), "LOGIN      = %s\n", GC->Login);
   AttackInfoServer(text_sprintf);
-  sprintf(text_sprintf, "SENHA      = %s\n", GC->Password);
+  sprintf_s(text_sprintf, _countof(text_sprintf), "SENHA      = %s\n", GC->Password);
   AttackInfoServer(text_sprintf);
  }
- sprintf(text_sprintf, "IP          = %s\n", GC->Ip);
+ sprintf_s(text_sprintf, _countof(text_sprintf), "IP          = %s\n", GC->Ip);
  AttackInfoServer(text_sprintf);
- sprintf(text_sprintf, "PORTA       = %d\n", GC->Port);
+ sprintf_s(text_sprintf, _countof(text_sprintf), "PORTA       = %d\n", GC->Port);
  AttackInfoServer(text_sprintf);
  
- sprintf(text_sprintf, "VERSION     = %s\n", SC->VERSION_PANGYA);
+ sprintf_s(text_sprintf, _countof(text_sprintf), "VERSION     = %s\n", SC->VERSION_PANGYA);
  AttackInfoServer(text_sprintf);
  
  /*sprintf(text_sprintf, "RELOAD TIME = %d MINUTOS\n", SC->RELOAD_GAME);
@@ -298,7 +298,7 @@ void Log()
  BarSpace();
  TextCentralize("DethonBot By Firefox");
  BarSpace();
- sprintf(text, "Pangya Dethon");
+ sprintf_s(text, _countof(text), "Pangya Dethon");
  TextCentralize(text);
  BarSpace();
 }
@@ -358,7 +358,7 @@ void ShowPacketInHex(unsigned char *packet_buffer, unsigned int size)
   }
   else if(DEBUG_MODE == 2)
   {
-   sprintf(CONVERT_TO_CHAR, "%02X", (unsigned char)packet_buffer[i]);
+   sprintf_s(CONVERT_TO_CHAR, _countof(CONVERT_TO_CHAR), "%02X", (unsigned char)packet_buffer[i]);
    DEBUG_MODE_BOX[TMP_DEBUGMOD] = CONVERT_TO_CHAR[0];
    TMP_DEBUGMOD++;
    DEBUG_MODE_BOX[TMP_DEBUGMOD] = CONVERT_TO_CHAR[1];
@@ -382,9 +382,10 @@ void ShowPacketInHex(unsigned char *packet_buffer, unsigned int size)
  }
 }
 
-BOOLEAN LoadingLibrary(GlobalVariables *GV)
+BOOLEAN LoadingLibrary(struct GlobalVariables *GV)
 {
- if(HINSTANCE uncompressDLL = LoadLibrary("uncompress.dll"))
+	HINSTANCE uncompressDLL, gameguardDLL;
+ if(uncompressDLL = LoadLibrary("uncompress.dll"))
  {
   GV->UnCompressPacket = (uncompress_packet)GetProcAddress(uncompressDLL, "call_uncompress");
   GV->CallEncryptMapPacket = (call_encrypt_map)GetProcAddress(uncompressDLL, "call_encrypt");
@@ -396,7 +397,7 @@ BOOLEAN LoadingLibrary(GlobalVariables *GV)
   return 0;
  }
     
- if(HINSTANCE gameguardDLL = LoadLibrary("gameguard.dll"))
+ if(gameguardDLL = LoadLibrary("gameguard.dll"))
  {
   GV->GameGuardCall = (gameguard_init)GetProcAddress(gameguardDLL, "gameguard_init");
   InfoServer("DLL gameguard.dll carregado com sucesso!\n");
@@ -585,7 +586,8 @@ void ShowCommand()
 void currentDateTime()
 {
  time_t     now = time(0);
- tm  tstruct;
- tstruct = *localtime(&now);
+ struct tm  tstruct;
+
+ localtime_s(&tstruct, &now);
  strftime(buf_time, sizeof(buf_time), "%Y-%m-%d.%X", &tstruct);
 }

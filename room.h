@@ -30,7 +30,7 @@
         
 #define RANDOM 0x7f
 
-void RoomCopyStructInfo(GeralConfig *, ServerConfig *, GlobalVariables *);
+void RoomCopyStructInfo(struct GeralConfig *, struct ServerConfig *, struct GlobalVariables *);
 void ResetRoom();
 void create_room(char *room_name, int player_num, int hole_num, int type_map, unsigned int time_min, char *password);
 void enter_room(unsigned int ID_ROOM, char *password);

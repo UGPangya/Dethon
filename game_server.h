@@ -6,14 +6,14 @@
 #include "login_server.h"
 #include "room.h"
 
-void GameCopyStructInfo(GeralConfig *, ServerConfig *, GlobalVariables *);
+void GameCopyStructInfo(struct GeralConfig *, struct ServerConfig *, struct GlobalVariables *);
 
-void SelectChannelLogin(GeralConfig *, ServerConfig *, GlobalVariables *);
+void SelectChannelLogin(struct GeralConfig *, struct ServerConfig *, struct GlobalVariables *);
 
 DWORD ThreadSendTimePacket(LPVOID);
 DWORD ThreadSendPacketGameGuard(LPVOID);
 
-void GameDecryptFunc(GlobalVariables *);
+void GameDecryptFunc(struct GlobalVariables *);
 
 void SetLimitByteRecvPacket(int);
 

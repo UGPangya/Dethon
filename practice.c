@@ -3,9 +3,9 @@
 #define MAX_PANGS 1800000000
 unsigned long int pangs_counter;
 
-GeralConfig *PpGC;
-ServerConfig *PpSC;
-GlobalVariables *PpGV;
+struct GeralConfig *PpGC;
+struct ServerConfig *PpSC;
+struct GlobalVariables *PpGV;
 
 //unsigned char enter_practice_part01[] = "\x99\x41\x00\x0B\x72\x08\x00\x00\x00\x00\x00\x00\x40\x77\x1B\x00\x01\x13\x12\x0A\x04\x01\x07\x00\x00\x00\x1B\x00\x53\x69\x6E\x67\x6C\x65\x20\x50\x6C\x61\x79\x65\x72\x20\x50\x72\x61\x63\x74\x69\x63\x65\x20\x4D\x6F\x64\x65\x08\x00\x4D\x44\x41\x79\x4E\x44\x51\x30\x00\x00\x00\x00";
 unsigned char enter_practice_part01[] = 
@@ -39,7 +39,7 @@ unsigned char start_practice_part06[] = "\xED\x03\x00\x1A\xBE\x34\x00";
 
 static int counter_hole = 0x00;
 
-void PracticeCopyStructInfo(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
+void PracticeCopyStructInfo(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV)
 {
  PpGC = GC;
  PpSC = SC;
@@ -166,7 +166,7 @@ void TradeMapPractice()
  else
  {*/
   pangs_counter += 4000;
-  sprintf(PpGV->CInfo, "PARTIDA TERMINADA - PANGS [4000] - TOTAL [%d]\n", pangs_counter);
+  sprintf_s(PpGV->CInfo, _countof(PpGV->CInfo), "PARTIDA TERMINADA - PANGS [4000] - TOTAL [%d]\n", pangs_counter);
   InfoColor(PpGV->CInfo, 2);
   PacketSoma(practice_trade_map_packet01, sizeof(practice_trade_map_packet01)-1, 0);
   EncryptSendPacket((char*)practice_trade_map_packet01, sizeof(practice_trade_map_packet01)-1, 0);
@@ -177,7 +177,7 @@ void TradeMapPractice()
   if(pangs_counter >= MAX_PANGS)
   {
    InfoColor("ALCANDOU O LIMITE DE PANGS", 4);
-   getch();
+   _getch();
    exit(0);
   }
  

@@ -65,21 +65,21 @@ char PacketRecv[1024];
 char PacketSend[1024];
 unsigned char packet_decrypt[1024];*/
 
-void MakePacketLoginServer(GeralConfig *GC, GlobalVariables *GV)
+void MakePacketLoginServer(struct GeralConfig *GC, struct GlobalVariables *GV)
 {
  if(GC->AutoLogin == 0)
  {
   ColorText("Login: ", 4);
-  scanf("%s", GC->Login);
+  scanf_s("%s", GC->Login, _countof(GC->Login));
   ColorText("Senha: ", 4);
-  scanf("%s", GC->Password);
+  scanf_s("%s", GC->Password, _countof(GC->Password));
   BarSpace();
  }
       
  MD5((unsigned char*)GC->Password, strlen(GC->Password), GC->PASSMD5);
  MD5Convert(GC->PASSMD5, GC->PASSMD5CHAR, sizeof(GC->PASSMD5));
       
- sprintf(GV->CInfo, "PASSWORD MD5 [%s]\n", GC->PASSMD5CHAR);
+ sprintf_s(GV->CInfo, _countof(GV->CInfo), "PASSWORD MD5 [%s]\n", GC->PASSMD5CHAR);
  InfoServer(GV->CInfo);
       
  // MONTAR O PACKET DO LOGIN ...
@@ -95,18 +95,18 @@ void MakePacketLoginServer(GeralConfig *GC, GlobalVariables *GV)
  //printf("************ Debug ************\n");
  //ShowPacketInHex(packet_login_full, strlen(GC.Login)+sizeof(packet_login_part1)+sizeof(packet_login_part2)-2);
       
- sprintf(GV->CInfo, "connect server [%s]:[%d]\n", GC->Ip, GC->Port);
+ sprintf_s(GV->CInfo, _countof(GV->CInfo), "connect server [%s]:[%d]\n", GC->Ip, GC->Port);
  InfoServer(GV->CInfo);
 }
 
-void SendMakePacketLogin(GeralConfig *GC, GlobalVariables *GV)
+void SendMakePacketLogin(struct GeralConfig *GC, struct GlobalVariables *GV)
 {
  // SEND PACKET
  EncryptSendPacket((char*)packet_login_full, strlen(GC->Login)+sizeof(packet_login_part1)+sizeof(packet_login_part2)-2, 4);
  Sleep(100);
 }
 
-void SendPacketChangeLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
+void SendPacketChangeLogin(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV)
 {
  if(!GC->AutoLogin)
  {
@@ -122,7 +122,7 @@ void SendPacketChangeLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *G
   for(;;)
   {
    ColorText("SERVER -> ", 4);
-   scanf("%d", &SC->server_game_change);
+   scanf_s("%d", &SC->server_game_change);
    if(SC->server_game_change < MAX_SERVER_CONFIG)
     break;
    else
@@ -134,7 +134,7 @@ void SendPacketChangeLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *G
   if(SC->SELECT_SERVER < MAX_SERVER_CONFIG)
   {
    SC->server_game_change = SC->SELECT_SERVER;
-   sprintf(GV->CInfo,"AUTO SELECT SERVER ID [%d] SERVER_NAME [%s]\n", SC->SELECT_SERVER, SC->SERVERNAME[SC->server_game_change]);
+   sprintf_s(GV->CInfo, _countof(GV->CInfo), "AUTO SELECT SERVER ID [%d] SERVER_NAME [%s]\n", SC->SELECT_SERVER, SC->SERVERNAME[SC->server_game_change]);
    InfoServer(GV->CInfo);
   }
   else
@@ -155,7 +155,7 @@ void SendPacketChangeLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *G
  */
 }
 
-BOOLEAN SendServerLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
+BOOLEAN SendServerLogin(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV)
 {
  int tmp_byte = 0;
  
@@ -216,7 +216,7 @@ BOOLEAN SendServerLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
  return 1;
 }
 
-void DesconectLogin(GlobalVariables *GV)
+void DesconectLogin(struct GlobalVariables *GV)
 {
  EncryptSendPacket((char*)desconnect_client, sizeof(desconnect_client)-1, 0);
  Sleep(100);

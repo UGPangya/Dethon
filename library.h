@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <direct.h>
 #include <time.h>
-#include <openssl/md5.h>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -22,10 +21,13 @@
 #include <curses.h>
 #endif
 
+#include <stdbool.h>
+
 #include "encrypt.h"
 #include "decrypt.h"
 
 #include "color.h"
+#include "md5.h"
 
 #define IDD_DIALOG1 101
 #define IDC_EDT1 1001
@@ -57,7 +59,7 @@ struct GeralConfig
  unsigned char PASSMD5CHAR[32];
 };
 
-typedef struct ServerConfig
+struct ServerConfig
 {
  char SERVERNAME[MAX_SERVER_CONFIG][32];
  char SERVERIP[MAX_SERVER_CONFIG][20];
@@ -112,7 +114,7 @@ typedef void* (__stdcall *call_encrypt_map)(unsigned char* ByteEncrypt, unsigned
 
 // **********************************************************
 
-typedef struct GlobalVariables
+struct GlobalVariables
 {
  int bytes_recv;
  char CInfo[1024];
@@ -147,7 +149,7 @@ void ServerCommand(char *);
 void ColorText(char *, int);
 void InfoColor(char *, int);
 
-void LerConfig(GeralConfig*, ServerConfig*, char*);
+void LerConfig(struct GeralConfig*, struct ServerConfig*, char*);
 
 void Log();
 void BarSpace();
@@ -162,8 +164,8 @@ BOOLEAN PacketAnalyser(int);
 void AddStringToListBoxChat(char *buffer);
 void AddStringToListBoxDebug(char *buffer);
 
-BOOLEAN LoadingLibrary(GlobalVariables *);
-void InitGameGuard(GlobalVariables *);
+BOOLEAN LoadingLibrary(struct GlobalVariables *);
+void InitGameGuard(struct GlobalVariables *);
 DWORD GetProcessID(const char*);
 
 void SetStatusDialog(BOOLEAN SetByteStatus);

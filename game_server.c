@@ -32,18 +32,18 @@ unsigned char packet_gameguard[] = "\x90\x53\x00\x22\xA3\x88\x00\x00\x00\x00\x00
 static int PACKET_LIMITED = 0;
 /*static int TimeReload = 0;*/
 
-GeralConfig *GpGC;
-ServerConfig *GpSC;
-GlobalVariables *GpGV;
+struct GeralConfig *GpGC;
+struct ServerConfig *GpSC;
+struct GlobalVariables *GpGV;
 
-void GameCopyStructInfo(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
+void GameCopyStructInfo(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV)
 {
  GpGC = GC;
  GpSC = SC;
  GpGV = GV;
 }
 
-void SelectChannelLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
+void SelectChannelLogin(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV)
 {
  if(!GC->AutoLogin)
  {
@@ -56,7 +56,7 @@ void SelectChannelLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
    }
            
    ColorText("SUB_SERVER -> ", 4);
-   scanf("%d", &SC->server_login_channel_change);
+   scanf_s("%d", &SC->server_login_channel_change);
    if(SC->server_login_channel_change < MAX_SERVER_LOGIN_CONFIG)
     break;
    else
@@ -68,7 +68,7 @@ void SelectChannelLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
   if(SC->SELECT_SUBSERVER < MAX_SERVER_LOGIN_CONFIG)
   {
    SC->server_login_channel_change = SC->SELECT_SUBSERVER;
-   sprintf(GV->CInfo,"AUTO SELECT SUBSERVER ID [%d] SUBSERVER_NAME [%s]\n", SC->SELECT_SUBSERVER, SC->SUBSERVERNAME[SC->server_game_change][SC->server_login_channel_change]);
+   sprintf_s(GV->CInfo, _countof(GV->CInfo), "AUTO SELECT SUBSERVER ID [%d] SUBSERVER_NAME [%s]\n", SC->SELECT_SUBSERVER, SC->SUBSERVERNAME[SC->server_game_change][SC->server_login_channel_change]);
    InfoServer(GV->CInfo);
   }
   else
@@ -108,8 +108,9 @@ void SelectChannelLogin(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV)
  SendPacket((char*)start_game, sizeof(start_game)-1);
 }
 
-DWORD ThreadSendTimePacket(LPVOID)
+DWORD ThreadSendTimePacket(LPVOID param)
 {
+    UNREFERENCED_PARAMETER(param);
  while(GetStatusSendTimePacket())
  {
   Sleep(60000);
@@ -130,16 +131,16 @@ DWORD ThreadSendTimePacket(LPVOID)
 
 char msg_debug[127];
 
-void GameDecryptFunc(GlobalVariables *GV)
+void GameDecryptFunc(struct GlobalVariables *GV)
 {
  unsigned int tmp_other = 0x01;
  unsigned int retn_tmp;
- unsigned int tmp_ebp;
+ unsigned int tmp_ebp = 0;
 
  retn_tmp = RecvPacket((char*)GV->PacketRecv, sizeof(GV->PacketRecv)-1);
  GV->bytes_recv = retn_tmp;
  
- sprintf(msg_debug, "SIZE [%d] Recv Packet", retn_tmp);
+ sprintf_s(msg_debug, _countof(msg_debug), "SIZE [%d] Recv Packet", retn_tmp);
  AddStringToListBoxDebug(msg_debug);
  
  if(retn_tmp == 0 || retn_tmp == -1)

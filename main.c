@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include "library.h"
 #include "connect.h"
 #include "login_server.h"
@@ -38,9 +40,9 @@ unsigned char login_failed[] = "Incorrect login credentials";
 // **********************************************************
 // **********************************************************
 
-GeralConfig GC;
-ServerConfig SC;
-GlobalVariables GV;
+struct GeralConfig GC;
+struct ServerConfig SC;
+struct GlobalVariables GV;
 
 DWORD *PThread;
 
@@ -86,7 +88,7 @@ int main(int argc, char *argv[])
     SetConsoleTitle("DethonBot");
     Log();
     InfoServer("aperte enter para continuar!\n");
-    getch();
+    _getch();
     
     LoadingLibrary(&GV);
     /*InitGameGuard(&GV);*/
@@ -96,7 +98,7 @@ int main(int argc, char *argv[])
     else
     {   
      BarSpace();
-     sprintf(GV.CInfo, "carregando a ini [%s]\n", argv[1]);
+     sprintf_s(GV.CInfo, _countof(GV.CInfo), "carregando a ini [%s]\n", argv[1]);
      InfoServer(GV.CInfo);
      
      while(true)
@@ -129,7 +131,7 @@ int main(int argc, char *argv[])
 
        if(GV.bytes_recv != -1 && GV.bytes_recv != 0)
        {
-        sprintf(GV.CInfo, "SetByte | Encrypt / Decrypt [%d]\n", GV.PacketRecv[6]);
+        sprintf_s(GV.CInfo, _countof(GV.CInfo), "SetByte | Encrypt / Decrypt [%d]\n", GV.PacketRecv[6]);
         InfoServer(GV.CInfo);
        
         // SET BYTE KEY (ENCRYPT/DECRYPT) LOGIN_SERVER
@@ -169,7 +171,7 @@ int main(int argc, char *argv[])
          
          if(!CmpStringPos((unsigned char*)GV.packet_decrypt, (unsigned char*)login_failed, sizeof(login_failed)-1, 18, 0))
          {
-          sprintf(GV.CInfo, "set_offset_primary [%s]\n", SC.OffsetPrimary);
+          sprintf_s(GV.CInfo, _countof(GV.CInfo), "set_offset_primary [%s]\n", SC.OffsetPrimary);
           InfoServer(GV.CInfo);
           
           GameDecryptFunc(&GV);                                         // Multi-Packet and Decrypt Mult Packet
@@ -184,7 +186,7 @@ int main(int argc, char *argv[])
           }
           
           CopyStringPos((unsigned char*)SC.OffsetSecondary, (unsigned char*)GV.packet_decrypt, sizeof(SC.OffsetSecondary)-1, 0, 17);
-          sprintf(GV.CInfo, "set_offset_secondary [%s]\n", SC.OffsetSecondary);
+          sprintf_s(GV.CInfo, _countof(GV.CInfo), "set_offset_secondary [%s]\n", SC.OffsetSecondary);
           InfoServer(GV.CInfo);
           
           // NEW CONNECT
@@ -193,7 +195,7 @@ int main(int argc, char *argv[])
           
           TerminedSocket();
           
-          sprintf(GV.CInfo, "[%s] connect [%s]:[%d]\n", SC.SERVERNAME[SC.server_game_change], GC.Ip, GC.Port);
+          sprintf_s(GV.CInfo, _countof(GV.CInfo), "[%s] connect [%s]:[%d]\n", SC.SERVERNAME[SC.server_game_change], GC.Ip, GC.Port);
           InfoServer(GV.CInfo);
           
           if(init_connect(&GC) == 1)
@@ -212,7 +214,7 @@ int main(int argc, char *argv[])
            SetByteDecrypt(GV.packet_decrypt[8]);
            SetByteEncrypt(GV.packet_decrypt[8]);
            
-           sprintf(GV.CInfo, "SetByte | Encrypt / Decrypt [%d]\n", GV.packet_decrypt[8]);
+           sprintf_s(GV.CInfo, _countof(GV.CInfo), "SetByte | Encrypt / Decrypt [%d]\n", GV.packet_decrypt[8]);
            InfoServer(GV.CInfo);
 
            if(SendServerLogin(&GC, &SC, &GV))
@@ -353,7 +355,7 @@ int main(int argc, char *argv[])
      }
     }
     
-    getch();
+    _getch();
     return EXIT_SUCCESS;
 }
 
@@ -426,8 +428,9 @@ DWORD ThreadDialog(LPVOID param)
 }
 
 
-DWORD ThreadRecvPacket(LPVOID)
+DWORD ThreadRecvPacket(LPVOID param)
 {
+    UNREFERENCED_PARAMETER(param);
  while(GetStatusRecvPacket())
  {
   GameDecryptFunc(&GV);
@@ -682,7 +685,7 @@ BOOLEAN PacketAnalyser(int size_packet)
   {
    //MapTrade();
    InfoColor("JOGO INTEIRO FINALIZADO\n", 3);
-   sprintf(GV.CInfo, "RECEBEU PANG & EXP\n");
+   sprintf_s(GV.CInfo, _countof(GV.CInfo), "RECEBEU PANG & EXP\n");
    InfoColor(GV.CInfo, 2);
    FinityGame();
   }
@@ -695,7 +698,7 @@ BOOLEAN PacketAnalyser(int size_packet)
   {
    //MapTrade();
    InfoColor("JOGO PARCIALMENTE FINALIZADO\n", 3);
-   sprintf(GV.CInfo, "RECEBEU PANG & EXP\n");
+   sprintf_s(GV.CInfo, _countof(GV.CInfo), "RECEBEU PANG & EXP\n");
    InfoColor(GV.CInfo, 2);
    FinityGame();
   }
@@ -738,7 +741,7 @@ DWORD ThreadConsole(LPVOID param)
  while(GetStatusConsole())
  {
   ColorText("command -> ", 4);
-  scanf("%s", command);
+  scanf_s("%s", command, _countof(command));
   CommandAccess((char*)command);
   Sleep(1);
  }

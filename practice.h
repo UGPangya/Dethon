@@ -6,7 +6,7 @@
 #include "room.h"
 #include "library.h"
 
-void PracticeCopyStructInfo(GeralConfig *GC, ServerConfig *SC, GlobalVariables *GV);
+void PracticeCopyStructInfo(struct GeralConfig *GC, struct ServerConfig *SC, struct GlobalVariables *GV);
 DWORD InitPractice(LPVOID);
 void TradeMapPractice();
 
